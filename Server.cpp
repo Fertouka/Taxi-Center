@@ -6,10 +6,20 @@
 #include "Grid.h"
 #include "Matrix.h"
 #include "TaxiCenter.h"
+#include "Udp.h"
 
 using namespace std;
 
 int main() {
+    std::cout << "Hello, from server" << std::endl;
+    Udp server(1, 5555);
+    server.initialize();
+    char buffer[1024];
+    server.reciveData(buffer, sizeof(buffer));
+    cout << buffer << endl;
+    server.sendData("sup?");
+/*
+
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid
@@ -48,7 +58,7 @@ int main() {
         switch (choice) {
             //create a driver
             case 1: {
-                int age;
+                /**int age;
                 char status;
                 int exp;
                 int cabId;
@@ -56,6 +66,11 @@ int main() {
                 Driver *d = new Driver(id, age, status, exp, cabId);
                 drivers.push_back(d);
                 tc.assignCabsToDrivers();
+
+                int numOfDrivers;
+                cin >> numOfDrivers;
+                char buffer[1024];
+                server.reciveData(buffer, sizeof(buffer));
                 break;
             }
             //create a trip
@@ -122,6 +137,7 @@ int main() {
     } while (choice != 7);
     drivers.clear();
     cabs.clear();
-    trips.clear();
+    trips.clear();*/
+
     return 0;
 }

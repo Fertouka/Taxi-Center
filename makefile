@@ -1,11 +1,11 @@
 #fertoud 316295005 amitayi 203839030
 all: ex3
 
-ex3: main.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o
-	g++ main.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o
+ex3: Server.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o
+	g++ Server.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o
 
-main.o: main.cpp
-	g++ -c main.cpp
+Server.o: Server.cpp
+	g++ -c Server.cpp
 
 BFS.o: BFS.cpp
 	g++ -c BFS.cpp
@@ -51,3 +51,9 @@ TransportationFlow.o: TransportationFlow.cpp
 
 Trip.o: Trip.cpp
 	g++ -c Trip.cpp
+
+Socket.o: Socket.cpp
+	g++ -c Socket.cpp
+
+Udp.o: Udp.cpp
+	g++ -c Udp.cpp

@@ -11,6 +11,7 @@ class TaxiCenter : public Listener {
 private:
     list<Driver*> *employees;
     list<Cab*> *cabs;
+    list<Trip*> *trips;
 public:
 /**
  * class constructor
