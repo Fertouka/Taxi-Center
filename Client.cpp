@@ -12,6 +12,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
     Udp client(0, atoi(argv[1]));
     client.initialize();
+    client.sendData("client is connected");
     std::list <Driver*> drivers;
     std::list <Cab*> cabs;
     std::list <Trip*> trips;
@@ -20,6 +21,7 @@ int main(int argc, char *argv[]) {
     char choice[2];
     do {
         client.reciveData(choice, sizeof(choice));
+        cout << "\n client recieved the choice:" << choice[0];
         switch (choice[0]) {
             //create a driver
             case '1': {

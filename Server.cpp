@@ -14,16 +14,21 @@ using namespace std;
 int main() {
     Udp server(1, 5555);
     server.initialize();
+    cout << "initialized\n";
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid
     Grid grid;
     //the size of the grid
     int size[2];
+    char b[1024];
+    server.reciveData(b, sizeof(b));
+    cout << b;
     cin >> size[0] >> size[1];
     int numOfObstacles;
     list <Point> obstacles;
     cin >> numOfObstacles;
+    cout << "recieved" << numOfObstacles << "obstacles";
     //creating a list of obstacles
     if (numOfObstacles != 0) {
         //Point p = Point();
@@ -32,9 +37,11 @@ int main() {
             int y;
             cin >> x >> dummy >> y;
             obstacles.push_back(Point(x,y));
+            cout << "created the point" << Point(x,y) ;
         }
         //creating a grid with obstacles
         grid = Matrix(size[0], size[1], obstacles);
+        cout << "\n created a grid of" << size[0] << "X" << size[1];
     } else {
         //creating a grid without obstacles
         grid = Matrix(size[0], size[1]);
@@ -52,12 +59,15 @@ int main() {
     do {
         cin >> choice;
         server.sendData(boost::lexical_cast<string>(choice));
+        cout << "\nserver sent the choice:" << choice;
         switch (choice) {
             //create a driver
             case 1: {
                 int numOfDrivers;
                 cin >> numOfDrivers;
+                cout <<"\nrecievef num of drivers:" << numOfDrivers;
                 server.sendData(boost::lexical_cast<string>(numOfDrivers));
+                cout << "\nsent to the client the num of drivers:" << numOfDrivers;
                 while (numOfDrivers != 0) {
                     char buffer[1024];
                     server.reciveData(buffer, sizeof(buffer));
@@ -104,6 +114,7 @@ int main() {
                     >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
                 trips.push_back(new Trip(id, Point(startX, startY), Point(endX, endY),
                                          numOfPassenger, tariff, timeOfStart));
+                cout << "\ntrip created and pushed";
                 break;
             }
             //create a cab
@@ -114,6 +125,7 @@ int main() {
                 cin >> id >> dummy >> typeOfCab >> dummy >> manufacturer >> dummy >> color;
                 string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(typeOfCab)
                              + "," + manufacturer + "," + color;
+                cout << "\ncreated the string:" << str;
                 serCabs.push_back(str);
                 if (typeOfCab == 1) {
                     StandardCab *cab = new StandardCab(id, typeOfCab, manufacturer, color);
