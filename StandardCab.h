@@ -14,7 +14,7 @@ public:
  * @param color - the cab's color
  * @return - none
  */
-    StandardCab(int id, char manu, char color);
+    StandardCab(int id, int type, char manu, char color);
 
 /**
  * class constructor

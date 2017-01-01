@@ -4,8 +4,12 @@
 #define EX1_CAB_H
 
 #include <iostream>
+#include <stack>
 #include "Point.h"
 #include "Trip.h"
+#include "Node.h"
+#include "Grid.h"
+
 using namespace std;
 
 class Cab {
@@ -15,8 +19,10 @@ protected:
     char manu;
     char color;
     double tariff;
+    int type;
     Point location;
     bool hasTrip;
+    stack<Node*> trail;
     Trip* trip;
 public:
     /**
@@ -30,7 +36,7 @@ public:
      * @param manufacturer
      * @param color
      */
-    Cab(int id, char manu, char color);
+    Cab(int id, int type, char manu, char color);
 
     /**
      * Cab's constructor
@@ -129,6 +135,10 @@ public:
      * setting the cab's trip
      */
     virtual void setTrip(Trip* trip);
+
+    int getType() const;
+
+    void creaTrail(Grid grid);
 };
 
 

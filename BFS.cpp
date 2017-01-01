@@ -7,7 +7,7 @@
 #include "BFS.h"
 using namespace std;
 
-vector<Node *> BFS::bfs(Grid &grid, Point start, Point end) {
+stack<Node *> BFS::bfs(Grid &grid, Point start, Point end) {
     grid.create();
     queue<Node*> queue;
     //creating the stating to search the trail with the start point
@@ -39,7 +39,7 @@ vector<Node *> BFS::bfs(Grid &grid, Point start, Point end) {
 }
 
 
-std::vector<Node*> BFS::PrintTrail(Node* node, Point start) {
+stack<Node*> BFS::PrintTrail(Node* node, Point start) {
     stack<Node*> printStack = stack<Node*>();
     //pushing all the trail's nodes to a stack
     while (!((*node).getPoint() == start)) {
@@ -47,12 +47,11 @@ std::vector<Node*> BFS::PrintTrail(Node* node, Point start) {
         node = node->getFather();
     }
     printStack.push(node);
-    //return  printStack;
-    while (!printStack.empty()) {
+    return  printStack;
+    /*while (!printStack.empty()) {
         std::cout << (*printStack.top()).getPoint();
         printStack.pop();
-    }
-
+    }*/
 }
 
 

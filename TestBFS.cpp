@@ -35,15 +35,15 @@ public:
  * checking if the bfs function return the right and short trail
  */
 TEST_F(TestBFS, testPrintTrail) {
-    trail = vector<Point>();
-    trail.push_back(Point(2,0));
-    trail.push_back(Point(1,0));
-    trail.push_back(Point(0,0));
-    vector<Point> trailFromBfs = vector<Point>();
-    vector<Node*> bfsVector = BFS::bfs(grid, start.getPoint(), (*end).getPoint());
-    while(!bfsVector.empty()) {
-        trailFromBfs.push_back((*bfsVector.back()).getPoint());
-        bfsVector.pop_back();
+    stack<Point> trail;
+    trail.push(Point(2,0));
+    trail.push(Point(1,0));
+    trail.push(Point(0,0));
+    stack<Point> trailFromBfs;
+    stack<Node*> bfs = BFS::bfs(grid, start.getPoint(), (*end).getPoint());
+    while(!bfs.empty()) {
+        trailFromBfs.push((*(bfs.top())).getPoint());
+        bfs.pop();
     }
     EXPECT_EQ(trail, trailFromBfs);
 }

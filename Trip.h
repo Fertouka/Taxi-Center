@@ -13,6 +13,7 @@ private:
     Point start;
     Point end;
     int numOfPassengers;
+    int timeOfStart;
     double tariff;
 public:
 /**
@@ -40,7 +41,7 @@ public:
  * @param tariff - the tariff
  * @return - none
  */
-    Trip(int rideNum, const Point &start, const Point &end, int numOfPassengers, double tariff);
+    Trip(int rideNum, const Point &start, const Point &end, int numOfPassengers, double tariff, int timeOfStart);
 
 /**
  * ride num getter
@@ -120,6 +121,8 @@ public:
  * @return - if the trips are equal or not (bool)
  */
     bool operator==(const Trip &rhs) const;
+
+    int getTimeOfStart() const;
 
 };
 

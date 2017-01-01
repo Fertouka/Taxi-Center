@@ -1,6 +1,8 @@
 // fertoud 316295005 amitayi 203839030
 
 #include "Cab.h"
+#include "Grid.h"
+#include "BFS.h"
 
 
 Cab::Cab() {}
@@ -65,7 +67,7 @@ void Cab::setTrip(Trip* trip) {
     Cab::trip = trip;
 }
 
-Cab::Cab(int id, char manu, char color) : id(id), kilometrage(0), manu(manu), color(color), tariff(0.0), hasTrip(
+Cab::Cab(int id, int type, char manu, char color) : id(id), type(type), kilometrage(0), manu(manu), color(color), tariff(0.0), hasTrip(
         false) {}
 
 bool Cab::isHasTrip() const {
@@ -76,5 +78,10 @@ void Cab::setHasTrip(bool hasTrip) {
     Cab::hasTrip = hasTrip;
 }
 
+int Cab::getType() const {
+    return type;
+}
 
-
+void Cab::creaTrail(Grid grid) {
+    trail = BFS::bfs(grid, trip->getStart(), trip->getEnd());
+}

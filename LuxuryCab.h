@@ -20,7 +20,7 @@ public:
  * @param manu
  * @param color
  */
-    LuxuryCab(int id, char manu, char color);
+    LuxuryCab(int id, int type, char manu, char color);
 
 /**
  * Luxury cab constructor

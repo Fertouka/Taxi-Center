@@ -12,8 +12,12 @@ StandardCab::~StandardCab() {
 }
 
 void StandardCab::drive() {
-    location = Point(trip->getEnd());
-    this->setHasTrip(false);
+    if (trail.empty()) {
+        this->setHasTrip(false);
+    } else {
+            trail.pop();
+            location = trail.top()->getPoint();
+    }
 }
 
-StandardCab::StandardCab(int id, char manu, char color) : Cab(id, manu, color) {}
+StandardCab::StandardCab(int id, int type, char manu, char color) : Cab(id, type, manu, color) {}

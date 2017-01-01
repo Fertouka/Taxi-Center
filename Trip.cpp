@@ -66,11 +66,17 @@ bool Trip::operator==(const Trip &rhs) const {
            tariff == rhs.tariff;
 }
 
-Trip::Trip(int rideNum, const Point &start, const Point &end, int numOfPassengers, double tariff) : rideNum(rideNum),
+Trip::Trip(int rideNum, const Point &start, const Point &end, int numOfPassengers, double tariff, int timeOfStart) :
+                                                                                                    rideNum(rideNum),
                                                                                                     metersPassed(0),
                                                                                                     start(start),
                                                                                                     end(end),
                                                                                                     numOfPassengers(
                                                                                                             numOfPassengers),
-                                                                                                    tariff(tariff) {}
+                                                                                                    tariff(tariff),
+                                                                                                    timeOfStart(timeOfStart)
+                                                                                                    {}
 
+int Trip::getTimeOfStart() const {
+    return timeOfStart;
+}

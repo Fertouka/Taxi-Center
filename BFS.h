@@ -14,14 +14,14 @@ public:
      * @param start point
      * @param end point
      */
-    static vector<Node *> bfs(Grid &grid, Point start, Point end);
+    static stack<Node *> bfs(Grid &grid, Point start, Point end);
 
     /**
      * printing the short trail between the start and the point
      * @param node* the last node of the trail
      * @param start point of the trail
      */
-    static vector<Node *> PrintTrail(Node* node, Point start);
+    static stack<Node *> PrintTrail(Node* node, Point start);
 };
 
 #endif //EX1_BFS_H

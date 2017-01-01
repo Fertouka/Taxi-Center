@@ -11,7 +11,7 @@ class TaxiCenter : public Listener {
 private:
     list<Driver*> *employees;
     list<Cab*> *cabs;
-    list<Trip*> *trips;
+    Grid grid;
 public:
 /**
  * class constructor
@@ -19,13 +19,14 @@ public:
  */
     TaxiCenter();
 
+    TaxiCenter(list<Driver *> *employees, list<Cab *> *cabs);
 /**
  * class constructor
  * @param employees - pointer the drivers list
  * @param cabs - pointer to the cabs list
  * @return - none
  */
-    TaxiCenter(list<Driver *> *employees, list<Cab *> *cabs);
+    TaxiCenter(list<Driver *> *employees, list<Cab *> *cabs, Grid grid);
 
 /**
  * function that assigns the current cab to the current driver

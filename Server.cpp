@@ -1,9 +1,10 @@
 // fertoud 316295005 amitayi 203839030
 #include <iostream>
+#include <cstdlib>
+#include <boost/lexical_cast.hpp>
 #include "Driver.h"
 #include "StandardCab.h"
 #include "LuxuryCab.h"
-#include "Grid.h"
 #include "Matrix.h"
 #include "TaxiCenter.h"
 #include "Udp.h"
@@ -11,15 +12,8 @@
 using namespace std;
 
 int main() {
-    std::cout << "Hello, from server" << std::endl;
     Udp server(1, 5555);
     server.initialize();
-    char buffer[1024];
-    server.reciveData(buffer, sizeof(buffer));
-    cout << buffer << endl;
-    server.sendData("sup?");
-/*
-
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid
@@ -48,29 +42,53 @@ int main() {
     std::list <Driver*> drivers;
     std::list <Trip*> trips;
     std::list <Cab*> cabs;
+    std::list <string> serCabs;
     int id;
     //choice of the user
     int choice;
-    TaxiCenter tc = TaxiCenter(&drivers, &cabs);
+    int time = 0;
+    TaxiCenter tc = TaxiCenter(&drivers, &cabs, grid);
     //menu for the user
     do {
         cin >> choice;
+        server.sendData(boost::lexical_cast<string>(choice));
         switch (choice) {
             //create a driver
             case 1: {
-                /**int age;
-                char status;
-                int exp;
-                int cabId;
-                cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
-                Driver *d = new Driver(id, age, status, exp, cabId);
-                drivers.push_back(d);
-                tc.assignCabsToDrivers();
-
                 int numOfDrivers;
                 cin >> numOfDrivers;
-                char buffer[1024];
-                server.reciveData(buffer, sizeof(buffer));
+                server.sendData(boost::lexical_cast<string>(numOfDrivers));
+                while (numOfDrivers != 0) {
+                    char buffer[1024];
+                    server.reciveData(buffer, sizeof(buffer));
+                    char *driver[5];
+                    int i = 0;
+                    char* split;
+                    split = strtok(buffer, ",");
+                    while (split != NULL && i < 5) {
+                        driver[i] = split;
+                        i++;
+                        split = strtok (NULL, ",");
+                    }
+                    Driver *d = new Driver(atoi(driver[0]), atoi(driver[1]),
+                                           *driver[2], atoi(driver[3]), atoi(driver[4]));
+                    drivers.push_back(d);
+                    tc.assignCabsToDrivers();
+                    numOfDrivers--;
+                }
+                //send the num of cabs the client will get.
+                server.sendData(boost::lexical_cast<string>(serCabs.size()));
+                //initializing the the sercabs list iterator
+                list<string>::iterator startC;
+                list<string>::iterator endC;
+                startC = serCabs.begin();
+                endC = serCabs.end();
+                while (endC != startC) {
+                    string str = *startC;
+                    server.sendData(str);
+                    //advancing the cab's list iterator by one step
+                    std::advance(startC, 1);
+                }
                 break;
             }
             //create a trip
@@ -80,10 +98,12 @@ int main() {
                 int endX;
                 int endY;
                 int numOfPassenger;
+                int timeOfStart;
                 double tariff;
                 cin >> id >> dummy >> startX >> dummy >> startY >> dummy
-                    >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff;
-                trips.push_back(new Trip(id, Point(startX, startY), Point(endX, endY), numOfPassenger, tariff));
+                    >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
+                trips.push_back(new Trip(id, Point(startX, startY), Point(endX, endY),
+                                         numOfPassenger, tariff, timeOfStart));
                 break;
             }
             //create a cab
@@ -92,12 +112,15 @@ int main() {
                 char manufacturer;
                 char color;
                 cin >> id >> dummy >> typeOfCab >> dummy >> manufacturer >> dummy >> color;
+                string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(typeOfCab)
+                             + "," + manufacturer + "," + color;
+                serCabs.push_back(str);
                 if (typeOfCab == 1) {
-                    StandardCab *cab = new StandardCab(id, manufacturer, color);
+                    StandardCab *cab = new StandardCab(id, typeOfCab, manufacturer, color);
                     cab->setLocation(Point(0,0));
-                    cabs.push_back( cab);
+                    cabs.push_back(cab);
                 } else {
-                    LuxuryCab *cab = new LuxuryCab(id, manufacturer, color);
+                    LuxuryCab *cab = new LuxuryCab(id, typeOfCab, manufacturer, color);
                     cab->setLocation(Point(0,0));
                     cabs.push_back(cab);
                 }
@@ -122,7 +145,6 @@ int main() {
             }
             //all drivers are driving
             case 6: {
-                tc.assignTripsToDrivers(trips);
                 list<Cab*>::iterator cabsIteratorStart = cabs.begin();
                 list<Cab*>::iterator cabsIteratorEnd = cabs.end();
                 while (cabsIteratorStart != cabsIteratorEnd) {
@@ -132,12 +154,52 @@ int main() {
                 }
                 break;
             }
+            case 9: {
+                if (!trips.empty()) {
+                    tc.assignTripsToDrivers(trips);
+                    list<Cab*>::iterator cabsIteratorStart = cabs.begin();
+                    list<Cab*>::iterator cabsIteratorEnd = cabs.end();
+                    while (cabsIteratorStart != cabsIteratorEnd) {
+                        if ((*cabsIteratorStart)->isHasTrip()) {
+                            string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getRideNum()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getStart().getX()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getStart().getY()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getEnd().getX()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getEnd().getY()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getNumOfPassengers()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTariff()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTimeOfStart());
+                            server.sendData(str);
+                        }
+                        cabsIteratorStart++;
+                    }
+                } else {
+                    list<Cab*>::iterator cabsIteratorStart = cabs.begin();
+                    list<Cab*>::iterator cabsIteratorEnd = cabs.end();
+                    while (cabsIteratorStart != cabsIteratorEnd) {
+                        if((*cabsIteratorStart)->isHasTrip()) {
+                            if ((*cabsIteratorStart)->getTrip()->getTimeOfStart() == time) {
+                                (*cabsIteratorStart)->drive();
+                                Point newLocation = (*cabsIteratorStart)->getLocation();
+                                string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId()) + "," +
+                                        boost::lexical_cast<string>(newLocation.getX()) + "," +
+                                        boost::lexical_cast<string>(newLocation.getY());
+                                server.sendData(str);
+                            }
+                        }
+                        cabsIteratorStart++;
+                    }
+                }
+                time++;
+                break;
+            }
         }
 
     } while (choice != 7);
     drivers.clear();
     cabs.clear();
-    trips.clear();*/
-
+    trips.clear();
+    server.~Socket();
     return 0;
 }

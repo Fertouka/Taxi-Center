@@ -2,7 +2,13 @@
 #include <tgmath.h>
 #include "TaxiCenter.h"
 
-TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs): employees(employees), cabs(cabs) {}
+TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs): employees(employees),
+                                                                                                 cabs(cabs),
+                                                                                                grid(Grid()){}//////////////////////////////////////////////////
+
+TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs, Grid grid): employees(employees),
+                                                                                                 cabs(cabs),
+                                                                                                 grid(grid){}
 
 void TaxiCenter::assignCabsToDrivers() {
     //initializing the the cabs list iterator
@@ -81,6 +87,10 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
                         if (c->getLocation() == t->getStart()) {
                             //setting the trip to the current driver and cab
                             c->setTrip(trips.front());
+                            //creating the trail of the current trip
+                            if (grid != Grid()) {
+                                c->creaTrail(grid);
+                            }
                             //setting that the current driver has a trip now
                             c->setHasTrip(true);
                             //erasing the current trip from the list and advancing it right after

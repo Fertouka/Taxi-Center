@@ -55,3 +55,4 @@ const list <Point> &Grid::getObstacles() const {
 void Grid::setObstacles(const list <Point> &obstacles) {
     Grid::obstacles = obstacles;
 }
+
