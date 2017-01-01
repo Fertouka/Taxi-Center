@@ -6,7 +6,7 @@
 #include "Grid.h"
 using namespace std;
 
-Grid::Grid() {}
+Grid::Grid() : width(0), height(0) {}
 
 Grid::Grid(int width, int height) : width(width), height(height) {}
 

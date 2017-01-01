@@ -88,8 +88,10 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
                             //setting the trip to the current driver and cab
                             c->setTrip(trips.front());
                             //creating the trail of the current trip
-                            if (grid != Grid()) {
+                            if (grid.getHeight() != 0 && grid.getWidth() != 0) {
+                                cout << "cab now is creating his trail\n";
                                 c->creaTrail(grid);
+                                cout << "cab has a trail\n";
                             }
                             //setting that the current driver has a trip now
                             c->setHasTrip(true);

@@ -65,6 +65,10 @@ Node* Matrix::locationInGrid(Point p) {
     return &matrix[width - 1 - p.getY()][p.getX()];
 }
 
+Matrix::Matrix() {
+
+}
+
 
 
 

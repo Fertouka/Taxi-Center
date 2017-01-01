@@ -59,6 +59,8 @@ public:
  * @return point of the grid
  */
     Point convertIndexToPointInMatrix(int x, int y);
+
+    Matrix();
 };
 
 #endif //EX1_MATRIX_H
