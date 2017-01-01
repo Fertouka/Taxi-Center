@@ -4,9 +4,9 @@
 
 TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs): employees(employees),
                                                                                                  cabs(cabs),
-                                                                                                grid(Grid()){}//////////////////////////////////////////////////
+                                                                                                grid(new Grid()){}//////////////////////////////////////////////////
 
-TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs, Grid grid): employees(employees),
+TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs, Grid *grid): employees(employees),
                                                                                                  cabs(cabs),
                                                                                                  grid(grid){}
 
@@ -88,7 +88,7 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
                             //setting the trip to the current driver and cab
                             c->setTrip(trips.front());
                             //creating the trail of the current trip
-                            if (grid.getHeight() != 0 && grid.getWidth() != 0) {
+                            if ((*grid).getHeight() != 0 && (*grid).getWidth() != 0) {
                                 cout << "cab now is creating his trail\n";
                                 c->creaTrail(grid);
                                 cout << "cab has a trail\n";

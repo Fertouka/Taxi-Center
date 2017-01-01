@@ -82,7 +82,7 @@ int Cab::getType() const {
     return type;
 }
 
-void Cab::creaTrail(Grid grid) {
+void Cab::creaTrail(Grid *grid) {
     cout << "now in the createTrail of Cab.cpp\n";
     trail = BFS::bfs(grid, trip->getStart(), trip->getEnd());
 }

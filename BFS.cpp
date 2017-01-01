@@ -7,12 +7,12 @@
 #include "BFS.h"
 using namespace std;
 
-stack<Node *> BFS::bfs(Grid &grid, Point start, Point end) {
-    grid.create();
+stack<Node *> BFS::bfs(Grid *grid, Point start, Point end) {
+    (*grid).create();
     cout << "grid was created in bfs\n";
     queue<Node*> queue;
     //creating the stating to search the trail with the start point
-    Node *node = grid.locationInGrid(start);
+    Node *node = (*grid).locationInGrid(start);
     cout << "created node of the start point by using the grid\n";
 
     queue.push(node);

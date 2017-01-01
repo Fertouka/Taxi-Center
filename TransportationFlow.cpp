@@ -1,5 +1,5 @@
 // fertoud 316295005 amitayi 203839030
-
+/*
 #include "TransportationFlow.h"
 
 TransportationFlow::TransportationFlow(Grid grid, const TaxiCenter &taxiCenter) : grid(grid),
@@ -14,5 +14,5 @@ void TransportationFlow::randomPassenger() {
 
 void TransportationFlow::trajectory(Point start, Point end) {
     //computing the trajectory using the bfs
-    BFS::bfs(TransportationFlow::grid, start, end);
-}
+    BFS::bfs(TransportationFlow::*grid, start, end);
+}*/

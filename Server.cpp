@@ -18,7 +18,7 @@ int main() {
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid
-    Matrix grid;
+    Grid *grid;
     //the size of the grid
     int size[2];
     char b[1024];
@@ -40,11 +40,11 @@ int main() {
             cout << "created the point " << Point(x,y) <<"\n" ;
         }
         //creating a grid with obstacles
-        grid = Matrix(size[0], size[1], obstacles);
+        grid =new Matrix(size[0], size[1], obstacles);
         cout << "created a grid of " << size[0] << "X" << size[1] <<"\n";
     } else {
         //creating a grid without obstacles
-        grid = Matrix(size[0], size[1]);
+        grid = new Matrix(size[0], size[1]);
     }
     std::list <Driver*> drivers;
     std::list <Trip*> trips;
@@ -218,6 +218,8 @@ int main() {
                 cout << "the new time is " << time << "\n";
                 break;
             }
+            default:
+                break;
         }
 
     } while (choice != 7);
