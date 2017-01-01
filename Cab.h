@@ -138,7 +138,7 @@ public:
 
     int getType() const;
 
-    void creaTrail(Grid grid);
+    void creaTrail(Grid *grid);
 };
 
 

@@ -14,7 +14,7 @@ public:
      * @param start point
      * @param end point
      */
-    static stack<Node *> bfs(Grid &grid, Point start, Point end);
+    static stack<Node *> bfs(Grid *grid, Point start, Point end);
 
     /**
      * printing the short trail between the start and the point

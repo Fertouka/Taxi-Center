@@ -7,19 +7,28 @@
 #include "BFS.h"
 using namespace std;
 
-stack<Node *> BFS::bfs(Grid &grid, Point start, Point end) {
-    grid.create();
+stack<Node *> BFS::bfs(Grid *grid, Point start, Point end) {
+    (*grid).create();
+    cout << "grid was created in bfs\n";
     queue<Node*> queue;
     //creating the stating to search the trail with the start point
-    Node *node = grid.locationInGrid(start);
+    Node *node = (*grid).locationInGrid(start);
+    cout << "created node of the start point by using the grid\n";
+
     queue.push(node);
-    (*node).setIsVisited(true);
+    cout << "node was pushed to the queue\n";
+            (*node).setIsVisited(true);
+    cout << "now node set to be visited\n";
     while (!queue.empty()) {
+        cout << "now in the while loop that checks !queue.empty\n";
         node = queue.front();
+        cout << "now node is set to be the front of the queue\n";
         queue.pop();
+        cout << "queue.pop()\n";
         //if we arrive to the end point
         if ((*node).getPoint() == end) {
             //printing the trail
+            cout << "now moving into print trail \n";
             return BFS::PrintTrail(node, start);
         }
         //searching the neighbours of each node
@@ -41,20 +50,18 @@ stack<Node *> BFS::bfs(Grid &grid, Point start, Point end) {
 
 stack<Node*> BFS::PrintTrail(Node* node, Point start) {
     stack<Node*> printStack = stack<Node*>();
-    cout << "we are now in the printTrail\n";
     //pushing all the trail's nodes to a stack
     while (!((*node).getPoint() == start)) {
         printStack.push(node);
         node = node->getFather();
     }
     printStack.push(node);
-    //return printStack;
+    return printStack;
     /*while (!printStack.empty()) {
         std::cout << (*printStack.top()).getPoint();
         printStack.pop();
-    }*/
-    cout << "returning the trail stack to the bfs\n";
-    return printStack;
+    }
+    return printStack;*/
 }
 
 

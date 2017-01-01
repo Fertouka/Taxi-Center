@@ -1,5 +1,5 @@
 // fertoud 316295005 amitayi 203839030
-
+/*
 #ifndef EX1_TRANSPORTATIONMAP_H
 #define EX1_TRANSPORTATIONMAP_H
 
@@ -36,3 +36,4 @@ public:
 
 
 #endif //EX1_TRANSPORTATIONMAP_H
+*/
