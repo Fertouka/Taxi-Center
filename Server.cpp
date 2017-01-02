@@ -20,9 +20,9 @@ int main(int argc, char *argv[]) {
     Grid *grid;
     //the size of the grid
     int size[2];
-    char b[1024];
-    server.reciveData(b, sizeof(b));
-    cout << b << "\n";
+    char b[1024];/////
+    server.reciveData(b, sizeof(b));/////
+    cout << b << "\n";//////
     cin >> size[0] >> size[1];
     int numOfObstacles;
     list <Point> obstacles;
@@ -224,7 +224,6 @@ int main(int argc, char *argv[]) {
                                     boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTimeOfStart());
                             //sending to the client the serialized trip
                             server.sendData(str);
-                            cout << "server sent to the client the serialized trip: " << str << "\n";
                         }
                         //advancing the iterator
                         cabsIteratorStart++;
