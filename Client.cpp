@@ -48,6 +48,7 @@ int main(int argc, char *argv[]) {
                     string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
                                  status + "," + boost::lexical_cast<string>(exp) + "," +
                                  boost::lexical_cast<string>(cabId);
+                    //pushing the driver we created to the drivers list
                     drivers.push_back(d);
                     //send a driver to the server
                     client.sendData(str);
@@ -85,12 +86,6 @@ int main(int argc, char *argv[]) {
                 tc.assignCabsToDrivers();
                 break;
             }
-                //getting the location of a driver
-            case '4':
-                break;
-                //all drivers are driving
-            case '6':
-                break;
             //assign trips to drivers and advance them
             case '9':
                 //assign trips to drivers
@@ -153,6 +148,5 @@ int main(int argc, char *argv[]) {
     drivers.clear();
     cabs.clear();
     trips.clear();
-    //client.~Socket();
     return 0;
 }
