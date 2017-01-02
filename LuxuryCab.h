@@ -36,7 +36,7 @@ public:
               Trip *trip);
 
 /**
- * the drive function that moves the cab from one point to another
+ * the drive function that moves the cab from two points to another
  */
     void drive();
 

@@ -19,6 +19,12 @@ public:
  */
     TaxiCenter();
 
+/**
+ * class constructor
+ * @param employees - pointer the drivers list
+ * @param cabs - pointer to the cabs list
+ * @param grid
+ */
     TaxiCenter(list<Driver *> *employees, list<Cab *> *cabs);
 /**
  * class constructor

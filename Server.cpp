@@ -11,10 +11,9 @@
 
 using namespace std;
 
-int main() {
-    Udp server(1, 5555);
+int main(int argc, char *argv[]) {
+    Udp server(1, atoi(argv[1]));
     server.initialize();
-    cout << "SERVER IS initialized\n";
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid
@@ -28,7 +27,6 @@ int main() {
     int numOfObstacles;
     list <Point> obstacles;
     cin >> numOfObstacles;
-    cout << "recieved " << numOfObstacles << " obstacles\n";
     //creating a list of obstacles
     if (numOfObstacles != 0) {
         //Point p = Point();
@@ -37,11 +35,9 @@ int main() {
             int y;
             cin >> x >> dummy >> y;
             obstacles.push_back(Point(x,y));
-            cout << "created the point " << Point(x,y) <<"\n" ;
         }
         //creating a grid with obstacles
         grid =new Matrix(size[0], size[1], obstacles);
-        cout << "created a grid of " << size[0] << "X" << size[1] <<"\n";
     } else {
         //creating a grid without obstacles
         grid = new Matrix(size[0], size[1]);
@@ -62,12 +58,9 @@ int main() {
             //create a driver
             case 1: {
                 server.sendData(boost::lexical_cast<string>(choice));
-                cout << "server sent the choice: " << choice <<"\n";
                 int numOfDrivers;
                 cin >> numOfDrivers;
-                cout <<"recieve num of drivers: " << numOfDrivers <<"\n";
                 server.sendData(boost::lexical_cast<string>(numOfDrivers));
-                cout << "sent to the client the num of drivers: " << numOfDrivers <<"\n";
                 while (numOfDrivers != 0) {
                     char buffer[1024];
                     server.reciveData(buffer, sizeof(buffer));
@@ -114,7 +107,6 @@ int main() {
                     >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
                 trips.push_back(new Trip(id, Point(startX, startY), Point(endX, endY),
                                          numOfPassenger, tariff, timeOfStart));
-                cout << "trip created and pushed\n";
                 break;
             }
             //create a cab
@@ -125,7 +117,6 @@ int main() {
                 cin >> id >> dummy >> typeOfCab >> dummy >> manufacturer >> dummy >> color;
                 string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(typeOfCab)
                              + "," + manufacturer + "," + color;
-                cout << "created the string: " << str <<"\n";
                 serCabs.push_back(str);
                 if (typeOfCab == 1) {
                     StandardCab *cab = new StandardCab(id, typeOfCab, manufacturer, color);
@@ -167,27 +158,25 @@ int main() {
                 break;
             }
             case 9: {
-                cout << "the time now is: " << time << "\n";
                 server.sendData(boost::lexical_cast<string>(choice));
-                cout <<"the serialized choice: " << boost::lexical_cast<string>(choice) << "\n";
-                cout << "server sent the choice: " << choice <<"\n";
                 if (!trips.empty()) {
-                    cout << "server is in the if\n";
-                    cout << "before assign, the size of trips list is " << trips.size() << "\n";
                     tc.assignTripsToDrivers(trips);
-                    cout << "the server has assigned the trips to the drivers\n";
                     list<Cab*>::iterator cabsIteratorStart = cabs.begin();
                     list<Cab*>::iterator cabsIteratorEnd = cabs.end();
-                    cout << "after assign, the size of trips list is " << trips.size() << "\n";
                     while (cabsIteratorStart != cabsIteratorEnd) {
                         if ((*cabsIteratorStart)->isHasTrip()) {
                             string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId()) + "," +
                                     boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getRideNum()) + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getStart().getX()) + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getStart().getY()) + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getEnd().getX()) + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getEnd().getY()) + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getNumOfPassengers()) + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getStart().getX())
+                                         + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getStart().getY())
+                                         + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getEnd().getX())
+                                         + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getEnd().getY())
+                                         + "," +
+                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getNumOfPassengers())
+                                         + "," +
                                     boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTariff()) + "," +
                                     boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTimeOfStart());
 
@@ -208,15 +197,12 @@ int main() {
                                         boost::lexical_cast<string>(newLocation.getX()) + "," +
                                         boost::lexical_cast<string>(newLocation.getY());
                                 server.sendData(str);
-                                cout << "server has sent to the client the serialized new location for the driver: "
-                                     << str << "\n";
                             }
                         }
                         cabsIteratorStart++;
                     }
                 }
                 time++;
-                cout << "the new time is " << time << "\n";
                 break;
             }
             default:

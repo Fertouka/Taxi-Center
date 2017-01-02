@@ -136,8 +136,15 @@ public:
      */
     virtual void setTrip(Trip* trip);
 
+    /**
+     * getting the type of the cab
+     */
     int getType() const;
 
+    /**
+     * creating a stack of points that introduce the trail of a trip
+     * @param grid
+     */
     void creaTrail(Grid *grid);
 };
 

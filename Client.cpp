@@ -11,24 +11,22 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    Udp client(0, atoi(argv[1]));
+    Udp client(0, atoi(argv[2]));
     client.initialize();
-    client.sendData("client is connected");
+    //lists for managing the information we get from the server
     std::list <Driver*> drivers;
     std::list <Cab*> cabs;
     std::list <Trip*> trips;
+    //copy of the taxi center in the server without the ability for managing it
     TaxiCenter tc = TaxiCenter(&drivers, &cabs);
     char buffer[1024];
     char choice[2];
     do {
         client.reciveData(choice, sizeof(choice));
-        //cout << "client recieved the choice:\n" << choice[0];
         switch (choice[0]) {
             //create a driver
             case '1': {
-                cout << "client is in case 1\n";
                 client.reciveData(buffer, sizeof(buffer));
-                cout << "client recieved " << buffer << " drivers\n";
                 int numOfDrivers = atoi(buffer);
                 while (numOfDrivers != 0) {
                     char dummy;
@@ -42,18 +40,15 @@ int main(int argc, char *argv[]) {
                     string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
                                  status + "," + boost::lexical_cast<string>(exp) + "," +
                                  boost::lexical_cast<string>(cabId);
-                    cout << "client created the serialized driver: " << str <<"\n";
                     drivers.push_back(d);
                     client.sendData(str);
                     numOfDrivers--;
                 }
                 //receive the num of cabs he will get
                 client.reciveData(buffer, sizeof(buffer));
-                cout << "client recieved " << buffer << "cabs from the server\n";
                 int numOfCabs = atoi(buffer);
                 while (numOfCabs != 0) {
                     client.reciveData(buffer, sizeof(buffer));
-                    cout << "client recieved the serialized cab: " << buffer << "\n";
                     char *cab[4];
                     int i = 0;
                     char *split;
@@ -67,18 +62,15 @@ int main(int argc, char *argv[]) {
                         StandardCab *c = new StandardCab(atoi(cab[0]), atoi(cab[1]), *cab[2], *cab[3]);
                         c->setLocation(Point(0, 0));
                         cabs.push_back(c);
-                        cout << "client created and pushed a cab from type 1\n";
                     } else {
                         LuxuryCab *c = new LuxuryCab(atoi(cab[0]), atoi(cab[1]), *cab[2], *cab[3]);
                         c->setLocation(Point(0, 0));
                         cabs.push_back(c);
-                        cout << "client created and pushed a cab from type 2\n";
 
                     }
                     numOfCabs--;
                 }
                 tc.assignCabsToDrivers();
-                cout << "client assigned cabs to drivers\n";
                 break;
             }
                 //getting the location of a driver
@@ -88,10 +80,8 @@ int main(int argc, char *argv[]) {
             case '6':
                 break;
             case '9':
-                cout << "client is in case 9\n";
                 if (trips.empty()) {
                     client.reciveData(buffer, sizeof(buffer));
-                    cout << "clienr recieved the serialized trip: " << buffer << "\n";
                     char *trip[9];
                     int i = 0;
                     char *split;
@@ -143,5 +133,3 @@ int main(int argc, char *argv[]) {
     //client.~Socket();
     return 0;
 }
-
-

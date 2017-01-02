@@ -35,6 +35,9 @@ public:
  */
     Node(const Point &point);
 
+/**
+ * restart the distance to be 0 and with no visit
+ */
     void restart();
 
 /**

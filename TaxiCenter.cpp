@@ -87,19 +87,14 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
                         if (c->getLocation() == t->getStart()) {
                             //setting the trip to the current driver and cab
                             c->setTrip(t);
-                            cout << "the start point of the trip " << c->getTrip()->getStart() << " \n";
-                            cout << "the end point of the trip " << c->getTrip()->getEnd() << " \n";
                             //creating the trail of the current trip
                             if ((*grid).getHeight() != 0 && (*grid).getWidth() != 0) {
-                                cout << "cab now is creating his trail\n";
                                 c->creaTrail(grid);
-                                cout << "cab has a trail\n";
                             }
                             //setting that the current driver has a trip now
                             c->setHasTrip(true);
                             //erasing the current trip from the list and advancing it right after
-                            //(*trips).erase(start++);
-                            trips.pop_front();//////////////////
+                            trips.pop_front();
                             start++;
                             //we know that we've deleted a trip
                             isTripDeleted = true;

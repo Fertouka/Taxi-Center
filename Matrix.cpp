@@ -60,6 +60,7 @@ void Matrix::create() {
 void Matrix::restart() {
     for (int i = 0; i < width ; ++i) {
         for (int j = 0; j < height; ++j) {
+            //restart every node in the matrix with 0 distance and with no visit
             matrix[i][j].restart();
         }
     }

@@ -12,11 +12,13 @@ StandardCab::~StandardCab() {
 }
 
 void StandardCab::drive() {
-    cout << "the next step in the trail is" << trail.top()->getPoint() << "\n";
+    //advance the driver one step
     location = trail.top()->getPoint();
     trail.pop();
+    //if we finished the trip, we update the "hasTrip" to false
     if (trail.empty())
         hasTrip = false;
+    //update the time in the driver
     trip->setTimeOfStart(trip->getTimeOfStart() + 1);
 }
 

@@ -41,7 +41,9 @@ public:
  * creating the stucture of the grid
  */
     virtual void create();
-
+/**
+ * restart the nodes in the grid to be with 0 distance and without visiting
+ */
     virtual void restart();
 
 /**
