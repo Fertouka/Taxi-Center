@@ -16,6 +16,8 @@ Grid::~Grid(){}
 
 void Grid::create() {}
 
+void Grid::restart() {}
+
 Grid Grid::getGrid() {
     return *this;
 }

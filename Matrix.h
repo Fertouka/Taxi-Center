@@ -36,6 +36,8 @@ public:
  */
     void create();
 
+    void restart();
+
 /**
  * @return the grid
  */

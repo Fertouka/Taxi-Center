@@ -42,6 +42,8 @@ public:
  */
     virtual void create();
 
+    virtual void restart();
+
 /**
  * getting the grid
  * @return grid

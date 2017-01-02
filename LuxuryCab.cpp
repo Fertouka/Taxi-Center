@@ -10,15 +10,15 @@ LuxuryCab::LuxuryCab(int id, int kilometrage, char manu, char color, double tari
 LuxuryCab::LuxuryCab() {}
 
 void LuxuryCab::drive() {
-    if (trail.empty()) {
-        this->setHasTrip(false);
-    } else {
-        trail.pop();
-        if (!trail.empty()) {
-            trail.pop();
-        }
+    location = trail.top()->getPoint();
+    trail.pop();
+    if (!trail.empty()) {
         location = trail.top()->getPoint();
+        trail.pop();
     }
+    if (trail.empty())
+        hasTrip = false;
+    trip->setTimeOfStart(trip->getTimeOfStart() + 1);
 }
 
 LuxuryCab::~LuxuryCab() {

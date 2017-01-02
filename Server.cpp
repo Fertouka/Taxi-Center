@@ -58,7 +58,6 @@ int main() {
     //menu for the user
     do {
         cin >> choice;
-
         switch (choice) {
             //create a driver
             case 1: {
@@ -66,7 +65,7 @@ int main() {
                 cout << "server sent the choice: " << choice <<"\n";
                 int numOfDrivers;
                 cin >> numOfDrivers;
-                cout <<"recievef num of drivers: " << numOfDrivers <<"\n";
+                cout <<"recieve num of drivers: " << numOfDrivers <<"\n";
                 server.sendData(boost::lexical_cast<string>(numOfDrivers));
                 cout << "sent to the client the num of drivers: " << numOfDrivers <<"\n";
                 while (numOfDrivers != 0) {
@@ -174,10 +173,12 @@ int main() {
                 cout << "server sent the choice: " << choice <<"\n";
                 if (!trips.empty()) {
                     cout << "server is in the if\n";
+                    cout << "before assign, the size of trips list is " << trips.size() << "\n";
                     tc.assignTripsToDrivers(trips);
                     cout << "the server has assigned the trips to the drivers\n";
                     list<Cab*>::iterator cabsIteratorStart = cabs.begin();
                     list<Cab*>::iterator cabsIteratorEnd = cabs.end();
+                    cout << "after assign, the size of trips list is " << trips.size() << "\n";
                     while (cabsIteratorStart != cabsIteratorEnd) {
                         if ((*cabsIteratorStart)->isHasTrip()) {
                             string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId()) + "," +
@@ -223,9 +224,11 @@ int main() {
         }
 
     } while (choice != 7);
+    //tell to client to get close
+    server.sendData(boost::lexical_cast<string>(choice));
     drivers.clear();
     cabs.clear();
     trips.clear();
-    server.~Socket();
+    //server.~Socket();
     return 0;
 }

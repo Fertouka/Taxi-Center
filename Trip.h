@@ -124,6 +124,8 @@ public:
 
     int getTimeOfStart() const;
 
+    void setTimeOfStart(int timeOfStart);
+
 };
 
 

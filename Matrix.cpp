@@ -57,6 +57,14 @@ void Matrix::create() {
     }
 }
 
+void Matrix::restart() {
+    for (int i = 0; i < width ; ++i) {
+        for (int j = 0; j < height; ++j) {
+            matrix[i][j].restart();
+        }
+    }
+}
+
 Grid Matrix::getGrid() {
     return *this;
 }

@@ -80,3 +80,7 @@ Trip::Trip(int rideNum, const Point &start, const Point &end, int numOfPassenger
 int Trip::getTimeOfStart() const {
     return timeOfStart;
 }
+
+void Trip::setTimeOfStart(int timeOfStart) {
+    Trip::timeOfStart = timeOfStart;
+}

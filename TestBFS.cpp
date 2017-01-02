@@ -40,7 +40,7 @@ TEST_F(TestBFS, testPrintTrail) {
     trail.push(Point(1,0));
     trail.push(Point(0,0));
     stack<Point> trailFromBfs;
-    stack<Node*> bfs = BFS::bfs(grid, start.getPoint(), (*end).getPoint());
+    stack<Node*> bfs = BFS::bfs(&grid, start.getPoint(), (*end).getPoint());
     while(!bfs.empty()) {
         trailFromBfs.push((*(bfs.top())).getPoint());
         bfs.pop();

@@ -70,7 +70,7 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
         while (employeesIteratorEnd != employeesIteratorStart ) {
             //setting the current driver using the iterator
             Driver *emp = *employeesIteratorStart;
-            //checking if the current drivwer already has a trip
+            //checking if the current driver already has a trip
             if (!(emp->getCab()->isHasTrip())) {
                 //the current driver does not have a trip, so we'll start searching the relevant cab to him
                 //setting the cab's list iterator
@@ -86,7 +86,9 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
                         //checking if the current location of the cab is matching the start point of the trip
                         if (c->getLocation() == t->getStart()) {
                             //setting the trip to the current driver and cab
-                            c->setTrip(trips.front());
+                            c->setTrip(t);
+                            cout << "the start point of the trip " << c->getTrip()->getStart() << " \n";
+                            cout << "the end point of the trip " << c->getTrip()->getEnd() << " \n";
                             //creating the trail of the current trip
                             if ((*grid).getHeight() != 0 && (*grid).getWidth() != 0) {
                                 cout << "cab now is creating his trail\n";
@@ -96,7 +98,9 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
                             //setting that the current driver has a trip now
                             c->setHasTrip(true);
                             //erasing the current trip from the list and advancing it right after
-                            trips.erase(start++);
+                            //(*trips).erase(start++);
+                            trips.pop_front();//////////////////
+                            start++;
                             //we know that we've deleted a trip
                             isTripDeleted = true;
                             break;

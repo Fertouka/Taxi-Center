@@ -12,12 +12,12 @@ StandardCab::~StandardCab() {
 }
 
 void StandardCab::drive() {
-    if (trail.empty()) {
-        this->setHasTrip(false);
-    } else {
-            trail.pop();
-            location = trail.top()->getPoint();
-    }
+    cout << "the next step in the trail is" << trail.top()->getPoint() << "\n";
+    location = trail.top()->getPoint();
+    trail.pop();
+    if (trail.empty())
+        hasTrip = false;
+    trip->setTimeOfStart(trip->getTimeOfStart() + 1);
 }
 
 StandardCab::StandardCab(int id, int type, char manu, char color) : Cab(id, type, manu, color) {}

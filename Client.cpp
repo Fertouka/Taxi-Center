@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
     drivers.clear();
     cabs.clear();
     trips.clear();
-    client.~Socket();
+    //client.~Socket();
     return 0;
 }
 

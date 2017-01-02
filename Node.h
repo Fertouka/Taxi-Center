@@ -35,6 +35,8 @@ public:
  */
     Node(const Point &point);
 
+    void restart();
+
 /**
  * getting the point of the node
  * @return point
