@@ -14,9 +14,6 @@ using namespace std;
 int main(int argc, char *argv[]) {
     Udp server(1, atoi(argv[1]));
     server.initialize();
-    char b[1024];
-    server.reciveData(b, sizeof(b));
-    cout << b << "\n";
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid
@@ -113,6 +110,8 @@ int main(int argc, char *argv[]) {
             }
             //create a trip
             case 2: {
+                //sending the client that option 2 was chosen
+                server.sendData(boost::lexical_cast<string>(choice));
                 int startX;
                 int startY;
                 int endX;
@@ -241,16 +240,16 @@ int main(int argc, char *argv[]) {
                             if ((*cabsIteratorStart)->getTrip()->getTimeOfStart() == time) {
                                 //advancing the trip
                                 (*cabsIteratorStart)->drive();
-                                //updating the cabs new location
-                                Point newLocation = (*cabsIteratorStart)->getLocation();
-                                //serializing the cab's new location'
-                                string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId()) + "," +
-                                        boost::lexical_cast<string>(newLocation.getX()) + "," +
-                                        boost::lexical_cast<string>(newLocation.getY());
-                                //sending to the client the cab's new location
-                                server.sendData(str);
                             }
                         }
+                        //updating the cabs new location
+                        Point newLocation = (*cabsIteratorStart)->getLocation();
+                        //serializing the cab's new location'
+                        string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId())
+                                     + "," + boost::lexical_cast<string>(newLocation.getX()) + "," +
+                                     boost::lexical_cast<string>(newLocation.getY());
+                        //sending to the client the cab's new location
+                        server.sendData(str);
                         //advancing the iterator
                         cabsIteratorStart++;
                     }

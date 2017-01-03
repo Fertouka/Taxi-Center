@@ -13,18 +13,16 @@ using namespace std;
 int main(int argc, char *argv[]) {
     Udp client(0, atoi(argv[2]));
     client.initialize();
-    client.sendData("connected");
     std::list <Driver*> drivers;
     std::list <Cab*> cabs;
     std::list <Trip*> trips;
     TaxiCenter tc = TaxiCenter(&drivers, &cabs);
     char buffer[1024];
     //using for managing case 9
-    int caseNineCounter = 0;
+    bool hasANewTrip;
     char choice[2];
     do {
         client.reciveData(choice, sizeof(choice));
-        cout << choice << "\n";
         switch (choice[0]) {
             //create a driver
             case '1': {
@@ -39,6 +37,7 @@ int main(int argc, char *argv[]) {
                     int cabId;
                     cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
                     Driver *d = new Driver(id, age, status, exp, cabId);
+                    //sending a serialized driver to server
                     string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
                                  status + "," + boost::lexical_cast<string>(exp) + "," +
                                  boost::lexical_cast<string>(cabId);
@@ -50,6 +49,7 @@ int main(int argc, char *argv[]) {
                 client.reciveData(buffer, sizeof(buffer));
                 int numOfCabs = atoi(buffer);
                 while (numOfCabs != 0) {
+                    //getting a serialized cab
                     client.reciveData(buffer, sizeof(buffer));
                     char *cab[4];
                     int i = 0;
@@ -60,6 +60,7 @@ int main(int argc, char *argv[]) {
                         i++;
                         split = strtok(NULL, ",");
                     }
+                    //create a cab
                     if (*cab[1] == '1') {
                         StandardCab *c = new StandardCab(atoi(cab[0]), atoi(cab[1]), *cab[2], *cab[3]);
                         c->setLocation(Point(0, 0));
@@ -75,14 +76,14 @@ int main(int argc, char *argv[]) {
                 tc.assignCabsToDrivers();
                 break;
             }
-                //getting the location of a driver
-            case '4':
-                break;
-                //all drivers are driving
-            case '6':
+                //updating that we have a new trip in delivery
+            case '2':
+                hasANewTrip = true;
                 break;
             case '9':
-                if (!trips.empty()) {
+                //checking if there are trips
+                if (hasANewTrip) {
+                    //getting a trip from server
                     client.reciveData(buffer, sizeof(buffer));
                     char *trip[9];
                     int i = 0;
@@ -95,6 +96,7 @@ int main(int argc, char *argv[]) {
                     }
                     list<Cab *>::iterator cabsIteratorStart = cabs.begin();
                     list<Cab *>::iterator cabsIteratorEnd = cabs.end();
+                    //assigning trip to driver
                     while (cabsIteratorStart != cabsIteratorEnd) {
                         if ((*cabsIteratorStart)->getId() == atoi(trip[0])) {
                             (*cabsIteratorStart)->setTrip(new Trip(atoi(trip[1]), Point(atoi(trip[2]), atoi(trip[3])),
@@ -104,24 +106,35 @@ int main(int argc, char *argv[]) {
                         }
                         cabsIteratorStart++;
                     }
+                    //now we took care of the new trip. therefore  we are updating the hasANewTrip to false.
+                    hasANewTrip = false;
+                    //else we dont have a new trip
                 } else {
-                    client.reciveData(buffer, sizeof(buffer));
-                    char *point[3];
-                    int i = 0;
-                    char *split;
-                    split = strtok(buffer, ",");
-                    while (split != NULL && i < 3) {
-                        point[i] = split;
-                        i++;
-                        split = strtok(NULL, ",");
-                    }
-                    list<Cab *>::iterator cabsIteratorStart = cabs.begin();
-                    list<Cab *>::iterator cabsIteratorEnd = cabs.end();
-                    while (cabsIteratorStart != cabsIteratorEnd) {
-                        if ((*cabsIteratorStart)->getId() == atoi(point[0])) {
-                            (*cabsIteratorStart)->setLocation(Point(atoi(point[1]), atoi(point[2])));
+                    for (int i = 0; i < cabs.size(); ++i) {
+                        //client receive a new location of each driver
+                        client.reciveData(buffer, sizeof(buffer));
+                        char *point[3];
+                        int j = 0;
+                        char *split;
+                        split = strtok(buffer, ",");
+                        while (split != NULL && j < 3) {
+                            point[j] = split;
+                            j++;
+                            split = strtok(NULL, ",");
                         }
-                        cabsIteratorStart++;
+                        list<Cab *>::iterator cabsIteratorStart = cabs.begin();
+                        list<Cab *>::iterator cabsIteratorEnd = cabs.end();
+                        while (cabsIteratorStart != cabsIteratorEnd) {
+                            //updating the location for the right cab
+                            if ((*cabsIteratorStart)->getId() == atoi(point[0])) {
+                                (*cabsIteratorStart)->setLocation(Point(atoi(point[1]), atoi(point[2])));
+                                //if a cab finished its trip, we update his status of hasTrip.
+                                if ((*cabsIteratorStart)->getTrip()->getEnd() == (*cabsIteratorStart)->getLocation()) {
+                                    (*cabsIteratorStart)->setHasTrip(false);
+                                }
+                            }
+                            cabsIteratorStart++;
+                        }
                     }
                 }
                 break;
