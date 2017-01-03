@@ -14,15 +14,15 @@ using namespace std;
 int main(int argc, char *argv[]) {
     Udp server(1, atoi(argv[1]));
     server.initialize();
+    char b[1024];
+    server.reciveData(b, sizeof(b));
+    cout << b << "\n";
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid
     Grid *grid;
     //the size of the grid
     int size[2];
-    char b[1024];/////
-    server.reciveData(b, sizeof(b));/////
-    cout << b << "\n";//////
     cin >> size[0] >> size[1];
     int numOfObstacles;
     list <Point> obstacles;

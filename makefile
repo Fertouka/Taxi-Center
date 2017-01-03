@@ -1,11 +1,17 @@
-#fertoud 316295005 amitayi 203839030
-all: ex3
+all: server.out client.out 
 
-ex3: Client.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o
-	g++ Client.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o
+server.out: Server.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o
+	g++ Server.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o -o server.out
+
+client.out: Client.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o
+	g++ Client.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o -o client.out
+
 
 Client.o: Client.cpp
 	g++ -c Client.cpp
+
+Server.o: Server.cpp
+	g++ -c Server.cpp
 
 BFS.o: BFS.cpp
 	g++ -c BFS.cpp
@@ -43,7 +49,7 @@ Passenger.o: Passenger.cpp
 StandardCab.o: StandardCab.cpp
 	g++ -c StandardCab.cpp
 
-TaxiCente.o: TaxiCenter.cpp
+TaxiCenter.o: TaxiCenter.cpp
 	g++ -c TaxiCenter.cpp
 
 TransportationFlow.o: TransportationFlow.cpp
@@ -57,3 +63,7 @@ Socket.o: Socket.cpp
 
 Udp.o: Udp.cpp
 	g++ -c Udp.cpp
+
+clean:
+	rm -f *.o a.out
+
