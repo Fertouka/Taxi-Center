@@ -1,151 +1,69 @@
+/*
+ * Client.cpp
+ *
+ *  Created on: Jan 10, 2017
+ *      Author: uriah
+ */
 
-#include <iostream>
-#include "Udp.h"
-#include "Driver.h"
-#include "StandardCab.h"
-#include "LuxuryCab.h"
-#include "TaxiCenter.h"
-#include <cstdlib>
-#include <boost/lexical_cast.hpp>
+#include "Client.h"
 
-using namespace std;
-
-int main(int argc, char *argv[]) {
-    Udp client(0, atoi(argv[2]));
-    client.initialize();
-    std::list <Driver*> drivers;
-    std::list <Cab*> cabs;
-    std::list <Trip*> trips;
-    TaxiCenter tc = TaxiCenter(&drivers, &cabs);
-    char buffer[1024];
-    //using for managing case 9
-    bool hasANewTrip;
-    char choice[2];
-    do {
-        client.reciveData(choice, sizeof(choice));
-        switch (choice[0]) {
-            //create a driver
-            case '1': {
-                client.reciveData(buffer, sizeof(buffer));
-                int numOfDrivers = atoi(buffer);
-                while (numOfDrivers != 0) {
-                    char dummy;
-                    int id;
-                    int age;
-                    char status;
-                    int exp;
-                    int cabId;
-                    cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
-                    Driver *d = new Driver(id, age, status, exp, cabId);
-                    //sending a serialized driver to server
-                    string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
-                                 status + "," + boost::lexical_cast<string>(exp) + "," +
-                                 boost::lexical_cast<string>(cabId);
-                    drivers.push_back(d);
-                    client.sendData(str);
-                    numOfDrivers--;
-                }
-                //receive the num of cabs he will get
-                client.reciveData(buffer, sizeof(buffer));
-                int numOfCabs = atoi(buffer);
-                while (numOfCabs != 0) {
-                    //getting a serialized cab
-                    client.reciveData(buffer, sizeof(buffer));
-                    char *cab[4];
-                    int i = 0;
-                    char *split;
-                    split = strtok(buffer, ",");
-                    while (split != NULL && i < 4) {
-                        cab[i] = split;
-                        i++;
-                        split = strtok(NULL, ",");
-                    }
-                    //create a cab
-                    if (*cab[1] == '1') {
-                        StandardCab *c = new StandardCab(atoi(cab[0]), atoi(cab[1]), *cab[2], *cab[3]);
-                        c->setLocation(Point(0, 0));
-                        cabs.push_back(c);
-                    } else {
-                        LuxuryCab *c = new LuxuryCab(atoi(cab[0]), atoi(cab[1]), *cab[2], *cab[3]);
-                        c->setLocation(Point(0, 0));
-                        cabs.push_back(c);
-
-                    }
-                    numOfCabs--;
-                }
-                tc.assignCabsToDrivers();
-                break;
-            }
-                //updating that we have a new trip in delivery
-            case '2':
-                hasANewTrip = true;
-                break;
-            case '9':
-                //checking if there are trips
-                if (hasANewTrip) {
-                    //getting a trip from server
-                    client.reciveData(buffer, sizeof(buffer));
-                    char *trip[9];
-                    int i = 0;
-                    char *split;
-                    split = strtok(buffer, ",");
-                    while (split != NULL && i < 9) {
-                        trip[i] = split;
-                        i++;
-                        split = strtok(NULL, ",");
-                    }
-                    list<Cab *>::iterator cabsIteratorStart = cabs.begin();
-                    list<Cab *>::iterator cabsIteratorEnd = cabs.end();
-                    //assigning trip to driver
-                    while (cabsIteratorStart != cabsIteratorEnd) {
-                        if ((*cabsIteratorStart)->getId() == atoi(trip[0])) {
-                            (*cabsIteratorStart)->setTrip(new Trip(atoi(trip[1]), Point(atoi(trip[2]), atoi(trip[3])),
-                                                                   Point(atoi(trip[4]), atoi(trip[5])), atoi(trip[6]),
-                                                                   atof(trip[7]), atoi(trip[8])));
-                            (*cabsIteratorStart)->setHasTrip(true);
-                        }
-                        cabsIteratorStart++;
-                    }
-                    //now we took care of the new trip. therefore  we are updating the hasANewTrip to false.
-                    hasANewTrip = false;
-                    //else we dont have a new trip
-                } else {
-                    for (int i = 0; i < cabs.size(); ++i) {
-                        //client receive a new location of each driver
-                        client.reciveData(buffer, sizeof(buffer));
-                        char *point[3];
-                        int j = 0;
-                        char *split;
-                        split = strtok(buffer, ",");
-                        while (split != NULL && j < 3) {
-                            point[j] = split;
-                            j++;
-                            split = strtok(NULL, ",");
-                        }
-                        list<Cab *>::iterator cabsIteratorStart = cabs.begin();
-                        list<Cab *>::iterator cabsIteratorEnd = cabs.end();
-                        while (cabsIteratorStart != cabsIteratorEnd) {
-                            //updating the location for the right cab
-                            if ((*cabsIteratorStart)->getId() == atoi(point[0])) {
-                                (*cabsIteratorStart)->setLocation(Point(atoi(point[1]), atoi(point[2])));
-                                //if a cab finished its trip, we update his status of hasTrip.
-                                if ((*cabsIteratorStart)->getTrip()->getEnd() == (*cabsIteratorStart)->getLocation()) {
-                                    (*cabsIteratorStart)->setHasTrip(false);
-                                }
-                            }
-                            cabsIteratorStart++;
-                        }
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    } while (choice[0] != '7');
-    drivers.clear();
-    cabs.clear();
-    trips.clear();
-    return 0;
+Client::Client(char* ip, int port, string name) {
+	this->ip = ip;
+	this->port = port;
+	this->client_socket = -1;
+	this->connected = false;
+	this->name = name;
 }
 
+void Client::Connect()
+{
+	// Init socket
+	this->client_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if(this->client_socket >= 0){
+		// Memset the connection details
+		memset(&this->connection_details, 0, sizeof(this->connection_details));
+		this->connection_details.sin_family = AF_INET;
+		this->connection_details.sin_addr.s_addr = inet_addr(ip);
+		this->connection_details.sin_port = htons(port);
+		// Connect to a server
+		if (connect(this->client_socket,
+				(struct sockaddr*)&this->connection_details, sizeof(this->connection_details)) >= 0)
+			this->connected = true;
+	}
+	// While we're connected
+	while (this->connected)
+	{
+		// Get a message from user
+		string msg;
+		getline(cin, msg);
+		// '7' Means close the connection
+		if (msg == "7")
+		{
+			this->connected = false;
+		}
+		else
+		{
+			// Add the name to the message
+			msg = this->name + ": " + msg;
+			// Convert to char*
+			const char* buffer = msg.c_str();
+			try
+			{
+				// Send the message to the server
+				int bytes = send(this->client_socket, buffer, msg.length(), 0);
+				if (bytes >= 0)
+					cout << ">> Message was sent ---> " << msg << endl;
+				else
+					cout << ">> Failed to send the message." << endl;
+			}
+			catch (...)
+			{
+				cout << ">> Error." << endl;
+			}
+		}
+	}
+}
+Client::~Client() {
+	close(this->client_socket);
+}
 

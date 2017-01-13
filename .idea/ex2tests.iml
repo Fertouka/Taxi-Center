@@ -7,16 +7,20 @@
       <sourceFolder url="file://$MODULE_DIR$/TestPassenger.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Server.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Matrix.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/TestPoint.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Tcp.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Passenger.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Driver.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Node.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/LuxuryCab.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Grid.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Notifier.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Cab.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Grid.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Point.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TestBFS.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Passenger.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ServerMain.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Tcp.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ClientMain.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Cab.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/BFS.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TestStandardCab.cpp" isTestSource="false" />
@@ -33,7 +37,7 @@
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Passenger.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Trip.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Notifier.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Client.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TaxiCenter.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TransportationFlow.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TestTrip.cpp" isTestSource="false" />
@@ -50,7 +54,9 @@
       <sourceFolder url="file://$MODULE_DIR$/lib/googletest-master/googletest/src/gtest-all.cc" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/lib/googletest-master/googletest/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/lib/googletest-master/googletest/cmake/internal_utils.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/TestPoint.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Matrix.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Server.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TestTaxiCenter.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TestTransportationFlow.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/LuxuryCab.h" isTestSource="false" />
