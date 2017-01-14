@@ -1,4 +1,5 @@
 // fertoud 316295005 amitayi 203839030
+
 #include <iostream>
 #include <cstdlib>
 #include <boost/lexical_cast.hpp>
@@ -7,13 +8,17 @@
 #include "LuxuryCab.h"
 #include "Matrix.h"
 #include "TaxiCenter.h"
-#include "Udp.h"
+#include "Tcp.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    Udp server(1, atoi(argv[1]));
+    Tcp server(1, atoi(argv[1]));
     server.initialize();
+    cout <<"initialized\n";
+    char buffer[1024];
+    server.reciveData(buffer, sizeof(buffer));
+    cout << buffer;
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid

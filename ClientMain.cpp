@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "Udp.h"
+#include "Tcp.h"
 #include "Driver.h"
 #include "StandardCab.h"
 #include "LuxuryCab.h"
@@ -11,8 +11,9 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    Udp client(0, atoi(argv[2]));
+    Tcp client(0, /*atoi(argv[2]),*/ atoi(argv[3]));
     client.initialize();
+    client.sendData("im connected, bitch\n");
     std::list <Driver*> drivers;
     std::list <Cab*> cabs;
     std::list <Trip*> trips;

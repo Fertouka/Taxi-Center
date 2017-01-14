@@ -1,9 +1,4 @@
-/*
- * Client.cpp
- *
- *  Created on: Jan 10, 2017
- *      Author: uriah
- */
+
 
 #include "Client.h"
 
@@ -50,7 +45,7 @@ void Client::Connect()
 			try
 			{
 				// Send the message to the server
-				int bytes = send(this->client_socket, buffer, msg.length(), 0);
+				int bytes = (int) send(this->client_socket, buffer, msg.length(), 0);
 				if (bytes >= 0)
 					cout << ">> Message was sent ---> " << msg << endl;
 				else
