@@ -1,3 +1,4 @@
+
 #include "Server.h"
 
 Server::Server(int port) {
@@ -73,7 +74,8 @@ void Server::Start()
 				pthread_mutex_unlock(&this->list_locker);
 
 				// Create a thread in order to listen to the client
-				pthread_create(&thread, NULL, threadFunction, (void*)data);
+				//pthread_create(&thread, NULL, threadFunction, (void*)data);
+                pthread_create(&thread,NULL,threadFunction,(void*) data);
 
 
 			}

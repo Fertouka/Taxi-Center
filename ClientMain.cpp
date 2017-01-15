@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "Udp.h"
+#include "Tcp.h"
 #include "Driver.h"
 #include "StandardCab.h"
 #include "LuxuryCab.h"
@@ -11,8 +11,9 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    Udp client(0, atoi(argv[2]));
+    Tcp client(0, atoi(argv[2]));
     client.initialize();
+    client.sendData("im connected, bitch\n", 0);
     std::list <Driver*> drivers;
     std::list <Cab*> cabs;
     std::list <Trip*> trips;
@@ -20,13 +21,14 @@ int main(int argc, char *argv[]) {
     char buffer[1024];
     //using for managing case 9
     bool hasANewTrip;
+    int clientDescriptor;
     char choice[2];
     do {
-        client.reciveData(choice, sizeof(choice));
+        client.receiveData(choice, sizeof(choice), clientDescriptor);
         switch (choice[0]) {
             //create a driver
             case '1': {
-                client.reciveData(buffer, sizeof(buffer));
+                client.receiveData(buffer, sizeof(buffer), clientDescriptor);
                 int numOfDrivers = atoi(buffer);
                 while (numOfDrivers != 0) {
                     char dummy;
@@ -42,15 +44,15 @@ int main(int argc, char *argv[]) {
                                  status + "," + boost::lexical_cast<string>(exp) + "," +
                                  boost::lexical_cast<string>(cabId);
                     drivers.push_back(d);
-                    client.sendData(str);
+                    //client.sendData(str);
                     numOfDrivers--;
                 }
                 //receive the num of cabs he will get
-                client.reciveData(buffer, sizeof(buffer));
+                client.receiveData(buffer, sizeof(buffer), clientDescriptor);
                 int numOfCabs = atoi(buffer);
                 while (numOfCabs != 0) {
                     //getting a serialized cab
-                    client.reciveData(buffer, sizeof(buffer));
+                    client.receiveData(buffer, sizeof(buffer), clientDescriptor);
                     char *cab[4];
                     int i = 0;
                     char *split;
@@ -84,7 +86,7 @@ int main(int argc, char *argv[]) {
                 //checking if there are trips
                 if (hasANewTrip) {
                     //getting a trip from server
-                    client.reciveData(buffer, sizeof(buffer));
+                    client.receiveData(buffer, sizeof(buffer), clientDescriptor);
                     char *trip[9];
                     int i = 0;
                     char *split;
@@ -112,7 +114,7 @@ int main(int argc, char *argv[]) {
                 } else {
                     for (int i = 0; i < cabs.size(); ++i) {
                         //client receive a new location of each driver
-                        client.reciveData(buffer, sizeof(buffer));
+                        client.receiveData(buffer, sizeof(buffer), clientDescriptor);
                         char *point[3];
                         int j = 0;
                         char *split;

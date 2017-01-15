@@ -1,4 +1,5 @@
 // fertoud 316295005 amitayi 203839030
+
 #include <iostream>
 #include <cstdlib>
 #include <boost/lexical_cast.hpp>
@@ -7,13 +8,19 @@
 #include "LuxuryCab.h"
 #include "Matrix.h"
 #include "TaxiCenter.h"
-#include "Udp.h"
+#include "Tcp.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    Udp server(1, atoi(argv[1]));
+    Tcp server(1, atoi(argv[1]));
     server.initialize();
+    cout <<"initialized\n";
+    char buffer[1024];
+    int clientDescriptor;
+    clientDescriptor = server.acceptOneClient();
+    server.receiveData(buffer, sizeof(buffer), clientDescriptor);
+    cout << buffer;
     //dummy for signs we ignore in the input
     char dummy;
     //in this line we creating the grid
@@ -56,18 +63,19 @@ int main(int argc, char *argv[]) {
         switch (choice) {
             //create a driver
             case 1: {
+
                 //sending to the client the operation
-                server.sendData(boost::lexical_cast<string>(choice));
+                server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 int numOfDrivers;
                 //recieving from the user how many drivers he wants
                 cin >> numOfDrivers;
                 //sending to the client the number of drivers
-                server.sendData(boost::lexical_cast<string>(numOfDrivers));
+                server.sendData(boost::lexical_cast<string>(numOfDrivers), clientDescriptor);
                 //we are creating the drivers from the serialized drivers that the server recieves from the client
                 while (numOfDrivers != 0) {
                     char buffer[1024];
                     //recieving a serialized driver
-                    server.reciveData(buffer, sizeof(buffer));
+                    server.receiveData(buffer, sizeof(buffer), clientDescriptor);
                     char *driver[5];
                     int i = 0;
                     char* split;
@@ -90,7 +98,7 @@ int main(int argc, char *argv[]) {
                     numOfDrivers--;
                 }
                 //send the num of cabs the client will get.
-                server.sendData(boost::lexical_cast<string>(serCabs.size()));
+                server.sendData(boost::lexical_cast<string>(serCabs.size()), clientDescriptor);
                 //initializing the the sercabs list iterator
                 list<string>::iterator startC;
                 list<string>::iterator endC;
@@ -102,7 +110,7 @@ int main(int argc, char *argv[]) {
                     //initializing a string to be the current serialized cab from the list
                     string str = *startC;
                     //sending to the client the serialized cab
-                    server.sendData(str);
+                    server.sendData(str, clientDescriptor);
                     //advancing the cab's list iterator by one step
                     std::advance(startC, 1);
                 }
@@ -111,7 +119,7 @@ int main(int argc, char *argv[]) {
             //create a trip
             case 2: {
                 //sending the client that option 2 was chosen
-                server.sendData(boost::lexical_cast<string>(choice));
+                server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 int startX;
                 int startY;
                 int endX;
@@ -194,7 +202,7 @@ int main(int argc, char *argv[]) {
             //advancing the clock and the cabs by one step (if it's the time to advance them)
             case 9: {
                 //sending the client that option 9 was chosen
-                server.sendData(boost::lexical_cast<string>(choice));
+                server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 //checking if there are trips
                 if (!trips.empty()) {
                     //assigning the trips to the drivers
@@ -222,7 +230,7 @@ int main(int argc, char *argv[]) {
                                     boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTariff()) + "," +
                                     boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTimeOfStart());
                             //sending to the client the serialized trip
-                            server.sendData(str);
+                            server.sendData(str, clientDescriptor);
                         }
                         //advancing the iterator
                         cabsIteratorStart++;
@@ -249,7 +257,7 @@ int main(int argc, char *argv[]) {
                                      + "," + boost::lexical_cast<string>(newLocation.getX()) + "," +
                                      boost::lexical_cast<string>(newLocation.getY());
                         //sending to the client the cab's new location
-                        server.sendData(str);
+                        server.sendData(str, clientDescriptor);
                         //advancing the iterator
                         cabsIteratorStart++;
                     }
@@ -264,7 +272,7 @@ int main(int argc, char *argv[]) {
 
     } while (choice != 7);
     //tell to client to get close
-    server.sendData(boost::lexical_cast<string>(choice));
+    server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
     drivers.clear();
     cabs.clear();
     trips.clear();

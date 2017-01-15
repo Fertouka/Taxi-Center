@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
 project(ex2tests)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -std=c++11 -Wall -Werror")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -std=c++11 -Wall -Werror -lpthread")
 add_subdirectory(lib/googletest-master)
 include_directories(lib/googletest-master/googletest/include)
 include_directories(lib/googletest-master/googlemock/include)
-set(SOURCE_FILES ServerMain.cpp Point.h Point.cpp Grid.cpp BFS.cpp BFS.h Grid.h Node.cpp Node.h Matrix.cpp Matrix.h Cab.cpp Cab.h Listener.cpp Listener.h Notifier.cpp Notifier.h Passenger.cpp Passenger.h Driver.cpp Driver.h LuxuryCab.cpp LuxuryCab.h StandardCab.cpp StandardCab.h TaxiCenter.cpp TaxiCenter.h TransportationFlow.cpp TransportationFlow.h Trip.cpp Trip.h TestBFS.cpp TestPoint.cpp TestDriver.cpp TestTrip.cpp TestLuxuryCab.cpp TestTaxiCenter.cpp TestPassenger.cpp TestGrid.cpp TestNode.cpp TestStandardCab.cpp TestMatrix.cpp TestTransportationFlow.cpp Color.h Manufacturer.h Socket.cpp Socket.h Udp.cpp Udp.h Tcp.cpp Tcp.h Server.cpp Server.h Client.cpp Client.h ClientMain.cpp)
+set(SOURCE_FILES ServerMain.cpp Point.h Point.cpp Grid.cpp BFS.cpp BFS.h Grid.h Node.cpp Node.h Matrix.cpp Matrix.h Cab.cpp Cab.h Listener.cpp Listener.h Notifier.cpp Notifier.h Passenger.cpp Passenger.h Driver.cpp Driver.h LuxuryCab.cpp LuxuryCab.h StandardCab.cpp StandardCab.h TaxiCenter.cpp TaxiCenter.h TransportationFlow.cpp TransportationFlow.h Trip.cpp Trip.h TestBFS.cpp TestPoint.cpp TestDriver.cpp TestTrip.cpp TestLuxuryCab.cpp TestTaxiCenter.cpp TestPassenger.cpp TestGrid.cpp TestNode.cpp TestStandardCab.cpp TestMatrix.cpp TestTransportationFlow.cpp Color.h Manufacturer.h Socket.cpp Socket.h Udp.cpp Udp.h Tcp.cpp Tcp.h Server.cpp Server.h Client.cpp Client.h ClientMain.cpp Tcp.h Server.h)
 add_executable(ex2tests ${SOURCE_FILES})
+find_package(Threads)
 target_link_libraries(ex2tests gtest gtest_main)
