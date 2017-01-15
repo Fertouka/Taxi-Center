@@ -1,11 +1,16 @@
 all: server.out client.out 
 
-server.out: Server.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o
-	g++ Server.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o -o server.out
+server.out: ServerMain.o Server.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Tcp.o
+	g++ ServerMain.o Server.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Tcp.o -pthread -o server.out
 
-client.out: Client.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o
-	g++ Client.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Udp.o -o client.out
+client.out: ClientMain.o Client.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Tcp.o
+	g++ ClientMain.o Client.o BFS.o Grid.o Matrix.o Node.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationFlow.o Trip.o Socket.o Tcp.o -pthread -o client.out
 
+ServerMain.o: ServerMain.cpp
+	g++ -c ServerMain.cpp
+
+ClientMain.o: ClientMain.cpp
+	g++ -c ClientMain.cpp
 
 Client.o: Client.cpp
 	g++ -c Client.cpp
@@ -61,8 +66,8 @@ Trip.o: Trip.cpp
 Socket.o: Socket.cpp
 	g++ -c Socket.cpp
 
-Udp.o: Udp.cpp
-	g++ -c Udp.cpp
+Tcp.o: Tcp.cpp
+	g++ -c Tcp.cpp
 
 clean:
 	rm -f *.o a.out
