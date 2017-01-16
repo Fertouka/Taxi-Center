@@ -21,14 +21,13 @@ int main(int argc, char *argv[]) {
     char buffer[1024];
     //using for managing case 9
     bool hasANewTrip;
-    int clientDescriptor;
     char choice[2];
     do {
-        client.receiveData(choice, sizeof(choice), clientDescriptor);
+        client.receiveData(choice, sizeof(choice), 0);
         switch (choice[0]) {
             //create a driver
             case '1': {
-                client.receiveData(buffer, sizeof(buffer), clientDescriptor);
+                client.receiveData(buffer, sizeof(buffer), 0);
                 int numOfDrivers = atoi(buffer);
                 while (numOfDrivers != 0) {
                     char dummy;
@@ -48,11 +47,11 @@ int main(int argc, char *argv[]) {
                     numOfDrivers--;
                 }
                 //receive the num of cabs he will get
-                client.receiveData(buffer, sizeof(buffer), clientDescriptor);
+                client.receiveData(buffer, sizeof(buffer), 0);
                 int numOfCabs = atoi(buffer);
                 while (numOfCabs != 0) {
                     //getting a serialized cab
-                    client.receiveData(buffer, sizeof(buffer), clientDescriptor);
+                    client.receiveData(buffer, sizeof(buffer), 0);
                     char *cab[4];
                     int i = 0;
                     char *split;
@@ -86,7 +85,7 @@ int main(int argc, char *argv[]) {
                 //checking if there are trips
                 if (hasANewTrip) {
                     //getting a trip from server
-                    client.receiveData(buffer, sizeof(buffer), clientDescriptor);
+                    client.receiveData(buffer, sizeof(buffer), 0);
                     char *trip[9];
                     int i = 0;
                     char *split;
@@ -114,7 +113,7 @@ int main(int argc, char *argv[]) {
                 } else {
                     for (int i = 0; i < cabs.size(); ++i) {
                         //client receive a new location of each driver
-                        client.receiveData(buffer, sizeof(buffer), clientDescriptor);
+                        client.receiveData(buffer, sizeof(buffer), 0);
                         char *point[3];
                         int j = 0;
                         char *split;

@@ -9,19 +9,90 @@
 #include "Matrix.h"
 #include "TaxiCenter.h"
 #include "Tcp.h"
-
 using namespace std;
+
+
+class ThreadManagement {
+public:
+    TaxiCenter* tc;
+    Tcp *socket;
+    ThreadManagement(TaxiCenter* t, Tcp* sock){
+        tc = t;
+        socket = sock;
+    }
+
+    ~ThreadManagement();
+};
+
+void* connectionManager(void* socketDesc) {
+    ThreadManagement* manager = (ThreadManagement*)socketDesc;
+    char buffer[4096];
+    int clientDescriptor = manager->socket->acceptOneClient();
+    //int status = manager->socket->receiveData(){
+    //recieving a serialized driver
+    manager->socket->.receiveData(buffer, sizeof(buffer), clientDescriptor);
+    char *driver[5];
+    int i = 0;
+    char* split;
+    split = strtok(buffer, ",");
+    //splitting the string to the relevant values of the driver
+    while (split != NULL && i < 5) {
+        driver[i] = split;
+        i++;
+        //splitting the string to the relevant values of the driver
+        split = strtok (NULL, ",");
+    }
+    //creating the driver using the info from the string we recieved from the client
+    Driver *d = new Driver(atoi(driver[0]), atoi(driver[1]), *driver[2], atoi(driver[3]), atoi(driver[4]));
+    //pushing the driver we created to the drivers list
+    manager->tc->addDriver(d);
+    //assigning the cabs to the drivers
+    manager->tc->.assignCabsToDrivers();
+    //send the num of cabs the client will get.
+    manager->socket->.sendData(boost::lexical_cast<string>(serCabs.size()), clientDescriptor);
+    //initializing the the sercabs list iterator
+    list<string>::iterator startC;
+    list<string>::iterator endC;
+    //initializing the start iterator to point to the start of the serialized cabs list
+    startC = serCabs.begin();
+    //initializing the end iterator to point to the end of the serialized cabs list
+    endC = serCabs.end();
+    while (endC != startC) {
+        //initializing a string to be the current serialized cab from the list
+        string str = *startC;
+        //sending to the client the serialized cab
+        manager->socket->.sendData(str, clientDescriptor);
+        //advancing the cab's list iterator by one step
+        std::advance(startC, 1);
+    }
+    pthread_exit(socketDesc);
+}
+
+    void sendChoiceToClients(Tcp* server, int choice,list <int> clientsDescriptors) {
+        list <int>::iterator startC;
+        list <int>::iterator endC;
+        startC = clientsDescriptors.begin();
+        //initializing the end iterator to point to the end of the serialized cabs list
+        endC = clientsDescriptors.end();
+        while (endC != startC) {
+            int desc = *startC;
+            (*server).sendData(boost::lexical_cast<string>(choice), desc);
+            std::advance(startC, 1);
+        }
+    }
 
 int main(int argc, char *argv[]) {
     Tcp server(1, atoi(argv[1]));
     server.initialize();
+    list <pthread_t> threads;
     cout <<"initialized\n";
     char buffer[1024];
-    int clientDescriptor;
-    clientDescriptor = server.acceptOneClient();
-    server.receiveData(buffer, sizeof(buffer), clientDescriptor);
-    cout << buffer;
+    //int clientDescriptor;
+    //clientDescriptor = server.acceptOneClient();
+    //server.receiveData(buffer, sizeof(buffer), clientDescriptor);
+    //cout << buffer;
     //dummy for signs we ignore in the input
+    list <int> clientDescriptors;
     char dummy;
     //in this line we creating the grid
     Grid *grid;
@@ -56,6 +127,7 @@ int main(int argc, char *argv[]) {
     int time = 0;
     //creating the taxi center of the server
     TaxiCenter tc = TaxiCenter(&drivers, &cabs, grid);
+    int numOfDrivers;
     //menu for the user
     do {
         //receiving an operation from the user
@@ -63,16 +135,27 @@ int main(int argc, char *argv[]) {
         switch (choice) {
             //create a driver
             case 1: {
-
+                sendChoiceToClients(&server, choice, clientDescriptors);
+                //int clientDescriptor = server.acceptOneClient();
                 //sending to the client the operation
-                server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
-                int numOfDrivers;
+                //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
+
                 //recieving from the user how many drivers he wants
                 cin >> numOfDrivers;
+                for(int i = 0; i < numOfDrivers; i++) {
+                    pthread_t thread;
+                    ThreadManagement* manager = new ThreadManagement(&tc, &server);
+                    int clientDescriptor = server.acceptOneClient();
+                    clientDescriptors.push_back(clientDescriptor);
+                    pthread_create(&thread, NULL, connectionManager, manager);
+                    //threads.push_back(thread);
+
+                }
+
                 //sending to the client the number of drivers
-                server.sendData(boost::lexical_cast<string>(numOfDrivers), clientDescriptor);
+                //server.sendData(boost::lexical_cast<string>(numOfDrivers), clientDescriptor);
                 //we are creating the drivers from the serialized drivers that the server recieves from the client
-                while (numOfDrivers != 0) {
+                /*while (numOfDrivers != 0) {
                     char buffer[1024];
                     //recieving a serialized driver
                     server.receiveData(buffer, sizeof(buffer), clientDescriptor);
@@ -113,13 +196,14 @@ int main(int argc, char *argv[]) {
                     server.sendData(str, clientDescriptor);
                     //advancing the cab's list iterator by one step
                     std::advance(startC, 1);
-                }
+                }*/
                 break;
             }
             //create a trip
             case 2: {
                 //sending the client that option 2 was chosen
-                server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
+                sendChoiceToClients(&server, choice, clientDescriptors);
+                //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 int startX;
                 int startY;
                 int endX;
@@ -202,7 +286,8 @@ int main(int argc, char *argv[]) {
             //advancing the clock and the cabs by one step (if it's the time to advance them)
             case 9: {
                 //sending the client that option 9 was chosen
-                server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
+                sendChoiceToClients(&server, choice, clientDescriptors);
+                //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 //checking if there are trips
                 if (!trips.empty()) {
                     //assigning the trips to the drivers
@@ -272,9 +357,12 @@ int main(int argc, char *argv[]) {
 
     } while (choice != 7);
     //tell to client to get close
-    server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
+    sendChoiceToClients(&server, choice, clientDescriptors);
+    //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
     drivers.clear();
     cabs.clear();
     trips.clear();
     return 0;
 }
+
+

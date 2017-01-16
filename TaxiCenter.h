@@ -50,7 +50,13 @@ public:
  * function tyhat tells a taxi to go pick a client that called
  */
     void event();
+
+    list<Driver *> *getEmployees() const;
+
+    void addDriver(Driver* d);
 };
 
 
 #endif //EX1_TAXICENTER_H
+
+

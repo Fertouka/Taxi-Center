@@ -127,5 +127,13 @@ void TaxiCenter::event() {
     std::cout << "event";
 }
 
+list<Driver *> *TaxiCenter::getEmployees() const {
+    return employees;
+}
+
+void TaxiCenter::addDriver(Driver* d) {
+    employees->push_back(d);
+}
+
 TaxiCenter::TaxiCenter() {
 }
