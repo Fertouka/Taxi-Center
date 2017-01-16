@@ -11,14 +11,16 @@
 #include "Tcp.h"
 using namespace std;
 
-
+int choice;
 class ThreadManagement {
 public:
     TaxiCenter* tc;
     Tcp *socket;
-    ThreadManagement(TaxiCenter* t, Tcp* sock){
+    std::list <string> serCabs;
+    ThreadManagement(TaxiCenter* t, Tcp* sock ,std::list <string> *serCabs ){
         tc = t;
         socket = sock;
+        serCabs = serCabs;
     }
 
     ~ThreadManagement();
@@ -49,21 +51,22 @@ void* connectionManager(void* socketDesc) {
     //assigning the cabs to the drivers
     manager->tc->.assignCabsToDrivers();
     //send the num of cabs the client will get.
-    manager->socket->.sendData(boost::lexical_cast<string>(serCabs.size()), clientDescriptor);
+    manager->socket->.sendData(boost::lexical_cast<string>(manager->serCabs.size()), clientDescriptor);
     //initializing the the sercabs list iterator
     list<string>::iterator startC;
     list<string>::iterator endC;
     //initializing the start iterator to point to the start of the serialized cabs list
-    startC = serCabs.begin();
+    startC = manager->serCabs.begin();
     //initializing the end iterator to point to the end of the serialized cabs list
-    endC = serCabs.end();
+    endC = manager->serCabs.end();
     while (endC != startC) {
         //initializing a string to be the current serialized cab from the list
         string str = *startC;
         //sending to the client the serialized cab
         manager->socket->.sendData(str, clientDescriptor);
         //advancing the cab's list iterator by one step
-        std::advance(startC, 1);
+        //std::advance(startC, 1);
+        startC++;
     }
     pthread_exit(socketDesc);
 }
@@ -77,7 +80,8 @@ void* connectionManager(void* socketDesc) {
         while (endC != startC) {
             int desc = *startC;
             (*server).sendData(boost::lexical_cast<string>(choice), desc);
-            std::advance(startC, 1);
+           // std::advance(startC, 1);
+            startC++;
         }
     }
 
@@ -123,7 +127,6 @@ int main(int argc, char *argv[]) {
     std::list <string> serCabs;
     int id;
     //choice of the user
-    int choice;
     int time = 0;
     //creating the taxi center of the server
     TaxiCenter tc = TaxiCenter(&drivers, &cabs, grid);
@@ -144,7 +147,7 @@ int main(int argc, char *argv[]) {
                 cin >> numOfDrivers;
                 for(int i = 0; i < numOfDrivers; i++) {
                     pthread_t thread;
-                    ThreadManagement* manager = new ThreadManagement(&tc, &server);
+                    ThreadManagement* manager = new ThreadManagement(&tc, &server, &serCabs);
                     int clientDescriptor = server.acceptOneClient();
                     clientDescriptors.push_back(clientDescriptor);
                     pthread_create(&thread, NULL, connectionManager, manager);

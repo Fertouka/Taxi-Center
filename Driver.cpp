@@ -1,5 +1,6 @@
 // fertoud 316295005 amitayi 203839030
 
+#include <cstdio>
 #include "Driver.h"
 
 Driver::Driver(int id, int age, char status, int experience, int cabId) : id(id), age(age), status(status),
@@ -8,10 +9,12 @@ Driver::Driver(int id, int age, char status, int experience, int cabId) : id(id)
 
 double Driver::tariffOfTotalDriving() {
     return 0.0;
+
 }
 
 int Driver::getId() const {
     return id;
+
 }
 
 void Driver::setId(int id) {
@@ -69,3 +72,6 @@ void Driver::getDriverLocation() {
 Driver::Driver() {
 
 }
+
+
+
