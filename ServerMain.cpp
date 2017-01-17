@@ -9,30 +9,34 @@
 #include "Matrix.h"
 #include "TaxiCenter.h"
 #include "Tcp.h"
+
 using namespace std;
 
 int choice;
+
 class ThreadManagement {
 public:
     TaxiCenter* tc;
     Tcp *socket;
+    int clientDescriptor;
     std::list <string> serCabs;
-    ThreadManagement(TaxiCenter* t, Tcp* sock ,std::list <string> *serCabs ){
+    ThreadManagement(TaxiCenter* t, Tcp* sock ,std::list <string> *serCabs, int clientDesc){
         tc = t;
         socket = sock;
+        clientDescriptor = clientDesc;
         serCabs = serCabs;
     }
 
     ~ThreadManagement();
 };
 
-void* connectionManager(void* socketDesc) {
+void* connectClient(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
     char buffer[4096];
-    int clientDescriptor = manager->socket->acceptOneClient();
+    //int clientDescriptor = manager->socket->acceptOneClient();
     //int status = manager->socket->receiveData(){
     //recieving a serialized driver
-    manager->socket->.receiveData(buffer, sizeof(buffer), clientDescriptor);
+    manager->socket->.receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     char *driver[5];
     int i = 0;
     char* split;
@@ -51,7 +55,7 @@ void* connectionManager(void* socketDesc) {
     //assigning the cabs to the drivers
     manager->tc->.assignCabsToDrivers();
     //send the num of cabs the client will get.
-    manager->socket->.sendData(boost::lexical_cast<string>(manager->serCabs.size()), clientDescriptor);
+    manager->socket->.sendData(boost::lexical_cast<string>(manager->serCabs.size()), manager->clientDescriptor);
     //initializing the the sercabs list iterator
     list<string>::iterator startC;
     list<string>::iterator endC;
@@ -63,10 +67,15 @@ void* connectionManager(void* socketDesc) {
         //initializing a string to be the current serialized cab from the list
         string str = *startC;
         //sending to the client the serialized cab
-        manager->socket->.sendData(str, clientDescriptor);
+        manager->socket->.sendData(str, manager->clientDescriptor);
         //advancing the cab's list iterator by one step
         //std::advance(startC, 1);
         startC++;
+    }
+    while (choice != 7) {
+        if (choice == 9) {
+
+        }
     }
     pthread_exit(socketDesc);
 }
@@ -129,7 +138,7 @@ int main(int argc, char *argv[]) {
     //choice of the user
     int time = 0;
     //creating the taxi center of the server
-    TaxiCenter tc = TaxiCenter(&drivers, &cabs, grid);
+    TaxiCenter tc = TaxiCenter(&drivers, &cabs, &trips, grid);
     int numOfDrivers;
     //menu for the user
     do {
@@ -147,10 +156,10 @@ int main(int argc, char *argv[]) {
                 cin >> numOfDrivers;
                 for(int i = 0; i < numOfDrivers; i++) {
                     pthread_t thread;
-                    ThreadManagement* manager = new ThreadManagement(&tc, &server, &serCabs);
                     int clientDescriptor = server.acceptOneClient();
+                    ThreadManagement* manager = new ThreadManagement(&tc, &server, &serCabs, clientDescriptor);
                     clientDescriptors.push_back(clientDescriptor);
-                    pthread_create(&thread, NULL, connectionManager, manager);
+                    pthread_create(&thread, NULL, connectClient, manager);
                     //threads.push_back(thread);
 
                 }
@@ -294,7 +303,7 @@ int main(int argc, char *argv[]) {
                 //checking if there are trips
                 if (!trips.empty()) {
                     //assigning the trips to the drivers
-                    tc.assignTripsToDrivers(trips);
+                    tc.assignTripsToDrivers();
                     //creating and initializing the cabs list iterator
                     list<Cab*>::iterator cabsIteratorStart = cabs.begin();
                     list<Cab*>::iterator cabsIteratorEnd = cabs.end();
@@ -357,7 +366,6 @@ int main(int argc, char *argv[]) {
             default:
                 break;
         }
-
     } while (choice != 7);
     //tell to client to get close
     sendChoiceToClients(&server, choice, clientDescriptors);

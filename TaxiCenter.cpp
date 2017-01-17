@@ -3,12 +3,18 @@
 #include "TaxiCenter.h"
 
 TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs): employees(employees),
-                                                                                                 cabs(cabs),
-                                                                                                grid(new Grid()){}//////////////////////////////////////////////////
+                                                                                      cabs(cabs), trips(NULL),
+                                                                                      grid(new Grid()){}
 
-TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs, Grid *grid): employees(employees),
-                                                                                                 cabs(cabs),
-                                                                                                 grid(grid){}
+TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs, list<Trip*> *trips):
+        employees(employees),
+        cabs(cabs), trips(trips),
+        grid(new Grid()){}
+
+TaxiCenter::TaxiCenter(std::list < Driver * > *employees,std:: list < Cab * > *cabs, list<Trip*> *trips, Grid *grid):
+        employees(employees),
+        cabs(cabs), trips(trips),
+        grid(grid){}
 
 void TaxiCenter::assignCabsToDrivers() {
     //initializing the the cabs list iterator
@@ -44,15 +50,15 @@ void TaxiCenter::assignCabsToDrivers() {
     }
 }
 
-void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
+void TaxiCenter::assignTripsToDrivers() {
     //flag that tells us if we have set the current trip to a cab already
     bool isTripDeleted = false;
     //initializing the trip's list iterator
     list<Trip*>::iterator start;
     list<Trip*>::iterator end;
     //setting the trip's list iterator
-    start = trips.begin();
-    end = trips.end();
+    start = trips->begin();
+    end = trips->end();
    // initializing thew cab's list iterator
     list<Cab*>::iterator startC;
     list<Cab*>::iterator endC;
@@ -60,7 +66,7 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
     list<Driver *>::iterator employeesIteratorStart;
     list<Driver *>::iterator employeesIteratorEnd;
     //moving on the trip's list
-    while ( start != end && !trips.empty()) {
+    while ( start != end && !trips->empty()) {
         //setting the current trip that we are checking
         Trip *t = *start;
         //setting the driver's list iterator
@@ -94,7 +100,7 @@ void TaxiCenter::assignTripsToDrivers(std::list<Trip*> &trips) {
                             //setting that the current driver has a trip now
                             c->setHasTrip(true);
                             //erasing the current trip from the list and advancing it right after
-                            trips.pop_front();
+                            trips->.pop_front();
                             start++;
                             //we know that we've deleted a trip
                             isTripDeleted = true;
@@ -133,6 +139,10 @@ list<Driver *> *TaxiCenter::getEmployees() const {
 
 void TaxiCenter::addDriver(Driver* d) {
     employees->push_back(d);
+}
+
+void TaxiCenter::addTrip(Trip* t) {
+    trips->push_back(t);
 }
 
 TaxiCenter::TaxiCenter() {

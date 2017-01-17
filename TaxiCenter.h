@@ -11,6 +11,7 @@ class TaxiCenter : public Listener {
 private:
     list<Driver*> *employees;
     list<Cab*> *cabs;
+    list<Trip*> *trips;
     Grid *grid;
 public:
 /**
@@ -26,13 +27,15 @@ public:
  * @param grid
  */
     TaxiCenter(list<Driver *> *employees, list<Cab *> *cabs);
+
+    TaxiCenter(list<Driver *> *employees, list<Cab *> *cabs, list<Trip*> *trips);
 /**
  * class constructor
  * @param employees - pointer the drivers list
  * @param cabs - pointer to the cabs list
  * @return - none
  */
-    TaxiCenter(list<Driver *> *employees, list<Cab *> *cabs, Grid *grid);
+    TaxiCenter(list<Driver *> *employees, list<Cab *> *cabs, list<Trip*> *trips, Grid *grid);
 
 /**
  * function that assigns the current cab to the current driver
@@ -44,7 +47,7 @@ public:
  * function that assigns the trips from the trips list to ythe currect driver and cab
  * @param trips - the trips list
  */
-    void assignTripsToDrivers(std::list<Trip*> &trips);
+    void assignTripsToDrivers();
 
 /**
  * function tyhat tells a taxi to go pick a client that called
@@ -54,6 +57,8 @@ public:
     list<Driver *> *getEmployees() const;
 
     void addDriver(Driver* d);
+
+    void addTrip(Trip* trip);
 };
 
 
