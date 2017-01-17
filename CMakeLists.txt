@@ -1,11 +1,21 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.6)
 project(ex2tests)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -std=c++11 -Wall -Werror -lpthread")
-add_subdirectory(lib/googletest-master)
-include_directories(lib/googletest-master/googletest/include)
-include_directories(lib/googletest-master/googlemock/include)
-set(SOURCE_FILES ServerMain.cpp Point.h Point.cpp Grid.cpp BFS.cpp BFS.h Grid.h Node.cpp Node.h Matrix.cpp Matrix.h Cab.cpp Cab.h Listener.cpp Listener.h Notifier.cpp Notifier.h Passenger.cpp Passenger.h Driver.cpp Driver.h LuxuryCab.cpp LuxuryCab.h StandardCab.cpp StandardCab.h TaxiCenter.cpp TaxiCenter.h TransportationFlow.cpp TransportationFlow.h Trip.cpp Trip.h TestBFS.cpp TestPoint.cpp TestDriver.cpp TestTrip.cpp TestLuxuryCab.cpp TestTaxiCenter.cpp TestPassenger.cpp TestGrid.cpp TestNode.cpp TestStandardCab.cpp TestMatrix.cpp TestTransportationFlow.cpp Color.h Manufacturer.h Socket.cpp Socket.h Udp.cpp Udp.h Tcp.cpp Tcp.h Server.cpp Server.h Client.cpp Client.h ClientMain.cpp Tcp.h Server.h)
-add_executable(ex2tests ${SOURCE_FILES})
-find_package(Threads)
-target_link_libraries(ex2tests gtest gtest_main)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+
+set(BOOST_ROOT CACHE PATH "/usr/include/boost/")
+find_package(Boost 1.58.0 COMPONENTS serialization system)
+include_directories(${Boost_INCLUDE_DIR})
+
+set(core_sockets sockets/Socket.cpp sockets/Socket.h sockets/Udp.cpp sockets/Udp.h sockets/Tcp.cpp sockets/Tcp.h)
+add_library(sockets ${core_sockets})
+
+set(SOURCE_FILES_CLIENT src/ClientMain.cpp src/Point.h src/Point.cpp src/Grid.cpp src/BFS.cpp src/BFS.h src/Grid.h src/Node.cpp src/Node.h src/Matrix.cpp src/Matrix.h src/Cab.cpp src/Cab.h src/Listener.cpp src/Listener.h src/Notifier.cpp src/Notifier.h src/Passenger.cpp src/Passenger.h src/Driver.cpp src/Driver.h src/LuxuryCab.cpp src/LuxuryCab.h src/StandardCab.cpp src/StandardCab.h src/TaxiCenter.cpp src/TaxiCenter.h src/TransportationFlow.cpp src/TransportationFlow.h src/Trip.cpp src/Trip.h)
+
+set(SOURCE_FILES_SERVER src/ServerMain.cpp src/Point.h src/Point.cpp src/Grid.cpp src/BFS.cpp src/BFS.h src/Grid.h src/Node.cpp src/Node.h src/Matrix.cpp src/Matrix.h src/Cab.cpp src/Cab.h src/Listener.cpp src/Listener.h src/Notifier.cpp src/Notifier.h src/Passenger.cpp src/Passenger.h src/Driver.cpp src/Driver.h src/LuxuryCab.cpp src/LuxuryCab.h src/StandardCab.cpp src/StandardCab.h src/TaxiCenter.cpp src/TaxiCenter.h src/TransportationFlow.cpp src/TransportationFlow.h src/Trip.cpp src/Trip.h)
+
+add_executable(Server ${SOURCE_FILES_SERVER})
+add_executable(Client ${SOURCE_FILES_CLIENT})
+
+target_link_libraries(Server sockets ${Boost_LIBRARIES})
+target_link_libraries(Client sockets ${Boost_LIBRARIES})
