@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
                 //int numOfCabs = atoi(buffer);
                 while (numOfCabs != 0) {
                     //getting a serialized cab
-                    //client.receiveData(buffer, sizeof(buffer), 0);
+                    client.receiveData(buffer, sizeof(buffer), 0);
                     char *cab[4];
                     int i = 0;
                     char *split;
