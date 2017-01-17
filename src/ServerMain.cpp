@@ -20,13 +20,13 @@ public:
     TaxiCenter* tc;
     Tcp *socket;
     int clientDescriptor;
-    std::list <string> serCabs;
-    std::list <string> currentLocation;
-    ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc, std::list <string> *serCabs, std::list <string> str){
+    std::list <string> *serCabs;
+    std::list <string> *currentLocation;
+    ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc, std::list <string> *sercabs, std::list <string> *str){
         tc = t;
         socket = sock;
         clientDescriptor = clientDesc;
-        serCabs = serCabs;
+        serCabs = sercabs;
         currentLocation = str;
     }
 
@@ -37,9 +37,9 @@ void* connectClient(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
     char buffer[4096];
     //int clientDescriptor = manager->socket->acceptOneClient();
-    //int status = manager->socket->receiveData(){
+    manager->socket->sendData("1", manager->clientDescriptor);
     //recieving a serialized driver
-    manager->socket->.receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
+    manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     char *driver[5];
     int i = 0;
     char* split;
@@ -56,21 +56,21 @@ void* connectClient(void* socketDesc) {
     //pushing the driver we created to the drivers list
     manager->tc->addDriver(d);
     //assigning the cabs to the drivers
-    manager->tc->.assignCabsToDrivers();
+    manager->tc->assignCabsToDrivers();
     //send the num of cabs the client will get.
     //manager->socket->.sendData(boost::lexical_cast<string>(manager->serCabs.size()), manager->clientDescriptor);//////
     //initializing the the sercabs list iterator
     list<string>::iterator startC;
     list<string>::iterator endC;
     //initializing the start iterator to point to the start of the serialized cabs list
-    startC = manager->serCabs.begin();
+    startC = manager->serCabs->begin();
     //initializing the end iterator to point to the end of the serialized cabs list
-    endC = manager->serCabs.end();
+    endC = manager->serCabs->end();
     while (endC != startC) {
         //initializing a string to be the current serialized cab from the list
         string str = *startC;
         //sending to the client the serialized cab
-        manager->socket->.sendData(str, manager->clientDescriptor);
+        manager->socket->sendData(str, manager->clientDescriptor);
         //advancing the cab's list iterator by one step
         //std::advance(startC, 1);
         startC++;
@@ -80,14 +80,14 @@ void* connectClient(void* socketDesc) {
             list<string>::iterator startL;
             list<string>::iterator endL;
             //initializing the start iterator to point to the start of the serialized cabs list
-            startL = manager->currentLocation.begin();
+            startL = manager->currentLocation->begin();
             //initializing the end iterator to point to the end of the serialized cabs list
-            endL = manager->currentLocation.end();
+            endL = manager->currentLocation->end();
             while (endL != startL) {
                 //initializing a string to be the current serialized cab from the list
                 string str = *startL;
                 //sending to the client the serialized cab
-                manager->socket->.sendData(str, manager->clientDescriptor);
+                manager->socket->sendData(str, manager->clientDescriptor);
                 //advancing the cab's list iterator by one step
                 //std::advance(startC, 1);
                 startL++;
@@ -103,17 +103,19 @@ void* connectBFS(void* socketDesc) {
     pthread_exit(socketDesc);
 }
 
-    void sendChoiceToClients(Tcp* server, int choice,list <int> clientsDescriptors) {
+    void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clientsDescriptors) {
         list <int>::iterator startC;
         list <int>::iterator endC;
         startC = clientsDescriptors.begin();
         //initializing the end iterator to point to the end of the serialized cabs list
         endC = clientsDescriptors.end();
-        while (endC != startC) {
-            int desc = *startC;
-            (*server).sendData(boost::lexical_cast<string>(choice), desc);
-           // std::advance(startC, 1);
-            startC++;
+        if(sendFlag) {
+            while (endC != startC) {
+                int desc = *startC;
+                (*server).sendData(boost::lexical_cast<string>(choice), desc);
+                // std::advance(startC, 1);
+                startC++;
+            }
         }
     }
 
@@ -123,12 +125,14 @@ int main(int argc, char *argv[]) {
     list <pthread_t> threads;
     cout <<"initialized\n";
     char buffer[1024];
+    list <int> clientDescriptors;
     //int clientDescriptor;
     //clientDescriptor = server.acceptOneClient();
+    //clientDescriptors.push_back(clientDescriptor);
     //server.receiveData(buffer, sizeof(buffer), clientDescriptor);
     //cout << buffer;
     //dummy for signs we ignore in the input
-    list <int> clientDescriptors;
+
     char dummy;
     //in this line we creating the grid
     Grid *grid;
@@ -161,6 +165,7 @@ int main(int argc, char *argv[]) {
     int id;
     //choice of the user
     int time = 0;
+    bool sendFlag = false;
     //creating the taxi center of the server
     TaxiCenter tc = TaxiCenter(&drivers, &cabs, &trips, grid);
     int numOfDrivers;
@@ -171,7 +176,7 @@ int main(int argc, char *argv[]) {
         switch (choice) {
             //create a driver
             case 1: {
-                sendChoiceToClients(&server, choice, clientDescriptors);
+
                 //int clientDescriptor = server.acceptOneClient();
                 //sending to the client the operation
                 //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
@@ -181,12 +186,15 @@ int main(int argc, char *argv[]) {
                 for(int i = 0; i < numOfDrivers; i++) {
                     pthread_t thread;
                     int clientDescriptor = server.acceptOneClient();
-                    ThreadManagement* manager = new ThreadManagement(&tc, &server, clientDescriptor, &serCabs, &currentLocation);
+                    ThreadManagement* manager = new ThreadManagement(&tc, &server, clientDescriptor, &serCabs,
+                                                                     &currentLocation);
                     clientDescriptors.push_back(clientDescriptor);
                     pthread_create(&thread, NULL, connectClient, manager);
                     //threads.push_back(thread);
 
                 }
+                sendFlag = true;
+                //sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
 
                 //sending to the client the number of drivers
                 //server.sendData(boost::lexical_cast<string>(numOfDrivers), clientDescriptor);
@@ -238,7 +246,7 @@ int main(int argc, char *argv[]) {
             //create a trip
             case 2: {
                 //sending the client that option 2 was chosen
-                sendChoiceToClients(&server, choice, clientDescriptors);
+                sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                 //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 int startX;
                 int startY;
@@ -322,7 +330,7 @@ int main(int argc, char *argv[]) {
             //advancing the clock and the cabs by one step (if it's the time to advance them)
             case 9: {
                 //sending the client that option 9 was chosen
-                sendChoiceToClients(&server, choice, clientDescriptors);
+                sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                 currentLocationInTripFlag = false;
                 //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 //checking if there are trips
@@ -403,7 +411,7 @@ int main(int argc, char *argv[]) {
         }
     } while (choice != 7);
     //tell to client to get close
-    sendChoiceToClients(&server, choice, clientDescriptors);
+    sendChoiceToClients(&server, sendFlag,choice, clientDescriptors);
     //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
     drivers.clear();
     cabs.clear();

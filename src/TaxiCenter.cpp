@@ -148,7 +148,7 @@ void TaxiCenter::assignTripToDriver() {
                     (*it)->getCab()->creaTrail(grid);
                 }
                 //erasing the current trip from the list and advancing it right after
-                trips->.pop_front();
+                trips->pop_front();
                 break;
             }
             std::advance(it, 1);

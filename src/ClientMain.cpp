@@ -13,23 +13,23 @@ using namespace std;
 int main(int argc, char *argv[]) {
     Tcp client(0, atoi(argv[2]));
     client.initialize();
-    client.sendData("im connected, bitch\n", 0);
+    //client.sendData("im connected, bitch\n", 0);
     std::list <Driver*> drivers;
     std::list <Cab*> cabs;
     //std::list <Trip*> trips;
     TaxiCenter tc = TaxiCenter(&drivers, &cabs);
     char buffer[1024];
     //using for managing case 9
-    bool hasANewTrip;
+    bool hasANewTrip = true;
     char choice[2];
     do {
         client.receiveData(choice, sizeof(choice), 0);
         switch (choice[0]) {
             //create a driver
             case '1': {
-                client.receiveData(buffer, sizeof(buffer), 0);
-                int numOfDrivers = atoi(buffer);
-                int numOfCabs = atoi(buffer);
+                //client.receiveData(buffer, sizeof(buffer), 0);
+                int numOfDrivers = 1/*atoi(buffer)*/;
+                int numOfCabs = 1/*atoi(buffer)*/;
                 while (numOfDrivers != 0) {
                     char dummy;
                     int id;
@@ -44,15 +44,16 @@ int main(int argc, char *argv[]) {
                                  status + "," + boost::lexical_cast<string>(exp) + "," +
                                  boost::lexical_cast<string>(cabId);
                     drivers.push_back(d);
+                    client.sendData(str, 0);
                     //client.sendData(str);
                     numOfDrivers--;
                 }
                 //receive the num of cabs he will get
-                //client.receiveData(buffer, sizeof(buffer), 0);
+
                 //int numOfCabs = atoi(buffer);
                 while (numOfCabs != 0) {
                     //getting a serialized cab
-                    client.receiveData(buffer, sizeof(buffer), 0);
+                    //client.receiveData(buffer, sizeof(buffer), 0);
                     char *cab[4];
                     int i = 0;
                     char *split;
