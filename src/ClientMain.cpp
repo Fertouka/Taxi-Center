@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
                         j = 1;
                         token2 = strtok(token1, ",");
                         while (token2 != NULL) {
-                            point[j] = token2;
+                            point[j - 1] = token2;
                             j++;
                             token2 = strtok(NULL, ",");
                         }
