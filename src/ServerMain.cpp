@@ -21,7 +21,8 @@ public:
     int clientDescriptor;
     std::list <string> *serCabs;
     string* currentLocation;
-    ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc, std::list <string> *sercabs, string* str){
+    ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc,
+                     list <string> *sercabs, string* str){
         tc = t;
         socket = sock;
         clientDescriptor = clientDesc;
@@ -38,6 +39,8 @@ void* connectClient(void* socketDesc) {
     manager->socket->sendData("1", manager->clientDescriptor);
     //recieving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
+    pthread_mutex_t driverMutex;
+    pthread_mutex_lock(&driverMutex);
     char *driver[5];
     int i = 0;
     char* split;
@@ -55,6 +58,7 @@ void* connectClient(void* socketDesc) {
     manager->tc->addDriver(d);
     //assigning the cabs to the drivers
     manager->tc->assignCabsToDrivers();
+    pthread_mutex_unlock(&driverMutex);
     //initializing the the sercabs list iterator
     list<string>::iterator startC;
     list<string>::iterator endC;
@@ -81,7 +85,10 @@ void* connectClient(void* socketDesc) {
 
 void* connectBFS(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
+    pthread_mutex_t bfsMutex;
+    pthread_mutex_lock(&bfsMutex);
     manager->tc->assignTripToDriver();
+    pthread_mutex_unlock(&bfsMutex);
     pthread_exit(socketDesc);
 }
 

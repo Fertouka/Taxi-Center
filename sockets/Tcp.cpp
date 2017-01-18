@@ -83,6 +83,7 @@ int Tcp::initialize() {
         sin.sin_family = AF_INET;                                        // IPv4 version
         sin.sin_addr.s_addr = inet_addr((this->ip_address).c_str());     // get IP address from DEFINE IP number
         sin.sin_port = htons(this->port_number);                         // pass port number
+        bzero(&(sin.sin_zero), 8);
         if (connect(this->socketDescriptor,
                     (struct sockaddr *) &sin, sizeof(sin)) < 0) {
             //return an error represent error at this method
