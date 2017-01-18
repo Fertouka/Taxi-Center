@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
     char choice[2];
     do {
         client.receiveData(choice, sizeof(choice), 0);
+        //client.sendData("bye", 0);
         switch (choice[0]) {
             //create a driver
             case '1': {
@@ -125,6 +126,7 @@ int main(int argc, char *argv[]) {
                             j++;
                             split = strtok(NULL, ",");
                         }
+                        //client.sendData("hi", 0);
                         list<Cab *>::iterator cabsIteratorStart = cabs.begin();
                         list<Cab *>::iterator cabsIteratorEnd = cabs.end();
                         while (cabsIteratorStart != cabsIteratorEnd) {

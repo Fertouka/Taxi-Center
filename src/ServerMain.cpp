@@ -13,6 +13,7 @@
 using namespace std;
 
 int choice;
+int countThreads = 0;
 bool currentLocationInTripFlag = false;
 
 class ThreadManagement {
@@ -38,6 +39,7 @@ void* connectClient(void* socketDesc) {
     char buffer[4096];
     //int clientDescriptor = manager->socket->acceptOneClient();
     manager->socket->sendData("1", manager->clientDescriptor);
+    //manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     //recieving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     char *driver[5];
@@ -83,14 +85,17 @@ void* connectClient(void* socketDesc) {
             startL = manager->currentLocation->begin();
             //initializing the end iterator to point to the end of the serialized cabs list
             endL = manager->currentLocation->end();
+            //manager->socket->sendData(manager->currentLocation->front(), manager->clientDescriptor);
             while (endL != startL) {
                 //initializing a string to be the current serialized cab from the list
                 string str = *startL;
                 //sending to the client the serialized cab
                 manager->socket->sendData(str, manager->clientDescriptor);
+                //manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
                 //advancing the cab's list iterator by one step
                 //std::advance(startC, 1);
                 startL++;
+                countThreads++;
             }
         }
     }
@@ -113,6 +118,8 @@ void* connectBFS(void* socketDesc) {
             while (endC != startC) {
                 int desc = *startC;
                 (*server).sendData(boost::lexical_cast<string>(choice), desc);
+                //char buff[1234];
+                //(*server).receiveData(buff, sizeof(buff), desc);
                 // std::advance(startC, 1);
                 startC++;
             }
@@ -176,8 +183,6 @@ int main(int argc, char *argv[]) {
         switch (choice) {
             //create a driver
             case 1: {
-
-                //int clientDescriptor = server.acceptOneClient();
                 //sending to the client the operation
                 //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
 
@@ -194,53 +199,6 @@ int main(int argc, char *argv[]) {
 
                 }
                 sendFlag = true;
-                //sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
-
-                //sending to the client the number of drivers
-                //server.sendData(boost::lexical_cast<string>(numOfDrivers), clientDescriptor);
-                //we are creating the drivers from the serialized drivers that the server recieves from the client
-                /*while (numOfDrivers != 0) {
-                    char buffer[1024];
-                    //recieving a serialized driver
-                    server.receiveData(buffer, sizeof(buffer), clientDescriptor);
-                    char *driver[5];
-                    int i = 0;
-                    char* split;
-                    split = strtok(buffer, ",");
-                    //splitting the string to the relevant values of the driver
-                    while (split != NULL && i < 5) {
-                        driver[i] = split;
-                        i++;
-                        //splitting the string to the relevant values of the driver
-                        split = strtok (NULL, ",");
-                    }
-                    //creating the driver using the info from the string we recieved from the client
-                    Driver *d = new Driver(atoi(driver[0]), atoi(driver[1]),
-                                           *driver[2], atoi(driver[3]), atoi(driver[4]));
-                    //pushing the driver we created to the drivers list
-                    drivers.push_back(d);
-                    //assigning the cabs to the drivers
-                    tc.assignCabsToDrivers();
-                    //decreasing the number of driveres we should create
-                    numOfDrivers--;
-                }
-                //send the num of cabs the client will get.
-                server.sendData(boost::lexical_cast<string>(serCabs.size()), clientDescriptor);
-                //initializing the the sercabs list iterator
-                list<string>::iterator startC;
-                list<string>::iterator endC;
-                //initializing the start iterator to point to the start of the serialized cabs list
-                startC = serCabs.begin();
-                //initializing the end iterator to point to the end of the serialized cabs list
-                endC = serCabs.end();
-                while (endC != startC) {
-                    //initializing a string to be the current serialized cab from the list
-                    string str = *startC;
-                    //sending to the client the serialized cab
-                    server.sendData(str, clientDescriptor);
-                    //advancing the cab's list iterator by one step
-                    std::advance(startC, 1);
-                }*/
                 break;
             }
             //create a trip
@@ -332,6 +290,10 @@ int main(int argc, char *argv[]) {
                 //sending the client that option 9 was chosen
                 sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                 currentLocationInTripFlag = false;
+                if (numOfDrivers == countThreads) {
+                    currentLocation.clear();
+                    countThreads = 0;
+                }
                 //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 //checking if there are trips
                 if (!trips.empty()) {
@@ -341,6 +303,7 @@ int main(int argc, char *argv[]) {
                         ThreadManagement* manager = new ThreadManagement(&tc, &server, 0, NULL, NULL);
                         //clientDescriptors.push_back(clientDescriptor);
                         pthread_create(&thread, NULL, connectBFS, manager);
+                        pthread_join(thread ,NULL);
                         //threads.push_back(thread);
 
                     }
@@ -392,9 +355,10 @@ int main(int argc, char *argv[]) {
                         //updating the cabs new location
                         Point newLocation = (*cabsIteratorStart)->getLocation();
                         //serializing the cab's new location'
-                        currentLocation.push_back(boost::lexical_cast<string>((*cabsIteratorStart)->getId())
+                        string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId())
                                      + "," + boost::lexical_cast<string>(newLocation.getX()) + "," +
-                                     boost::lexical_cast<string>(newLocation.getY()));
+                                     boost::lexical_cast<string>(newLocation.getY());
+                        currentLocation.push_back(str);
                         //sending to the client the cab's new location
                         //server.sendData(str, clientDescriptor);
                         //advancing the iterator
