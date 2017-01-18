@@ -13,7 +13,7 @@
 using namespace std;
 
 int choice;
-int countThreads = 0;
+//int countThreads = 0;
 bool currentLocationInTripFlag = false;
 
 class ThreadManagement {
@@ -291,10 +291,10 @@ int main(int argc, char *argv[]) {
                 //sending the client that option 9 was chosen
                 sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                 currentLocationInTripFlag = false;
-                if (numOfDrivers == countThreads) {
+                /*if (numOfDrivers == countThreads) {
                     currentLocation.clear();
                     countThreads = 0;
-                }
+                }*/
                 //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 //checking if there are trips
                 if (!trips.empty()) {
