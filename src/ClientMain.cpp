@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     std::list <Cab*> cabs;
     //std::list <Trip*> trips;
     TaxiCenter tc = TaxiCenter(&drivers, &cabs);
-    char buffer[1024];
+    char buffer[8069];
     //using for managing case 9
     bool hasANewTrip = true;
     char choice[2];
@@ -87,46 +87,26 @@ int main(int argc, char *argv[]) {
             case '9':
                 //checking if there are trips
                 if (hasANewTrip) {
-                    //getting a trip from server
-                    /*client.receiveData(buffer, sizeof(buffer), 0);
-                    char *trip[9];
-                    int i = 0;
-                    char *split;
-                    split = strtok(buffer, ",");
-                    while (split != NULL && i < 9) {
-                        trip[i] = split;
-                        i++;
-                        split = strtok(NULL, ",");
-                    }
-                    list<Cab *>::iterator cabsIteratorStart = cabs.begin();
-                    list<Cab *>::iterator cabsIteratorEnd = cabs.end();
-                    //assigning trip to driver
-                    while (cabsIteratorStart != cabsIteratorEnd) {
-                        if ((*cabsIteratorStart)->getId() == atoi(trip[0])) {
-                            (*cabsIteratorStart)->setTrip(new Trip(atoi(trip[1]), Point(atoi(trip[2]), atoi(trip[3])),
-                                                                   Point(atoi(trip[4]), atoi(trip[5])), atoi(trip[6]),
-                                                                   atof(trip[7]), atoi(trip[8])));
-                            (*cabsIteratorStart)->setHasTrip(true);
-                        }
-                        cabsIteratorStart++;
-                    }*/
                     //now we took care of the new trip. therefore  we are updating the hasANewTrip to false.
                     hasANewTrip = false;
                     //else we dont have a new trip
                 } else {
-                    for (int i = 0; i < cabs.size(); ++i) {
-                        //client receive a new location of each driver
-                        client.receiveData(buffer, sizeof(buffer), 0);
-                        char *point[3];
-                        int j = 0;
-                        char *split;
-                        split = strtok(buffer, ",");
-                        while (split != NULL && j < 3) {
-                            point[j] = split;
+                    //client receive a new location of each driver
+                    client.receiveData(buffer, sizeof(buffer), 0);
+                    char* token1;
+                    char* token2;
+                    char *point[3];
+                    int j;
+                    token1 = strtok(buffer, "_");
+                    while (token1 != NULL) {
+                        j = 1;
+                        token2 = strtok(token1, ",");
+                        while (token2 != NULL) {
+                            point[j] = token2;
                             j++;
-                            split = strtok(NULL, ",");
+                            token2 = strtok(NULL, ",");
                         }
-                        //client.sendData("hi", 0);
+                        token1 = strtok(NULL, "_");
                         list<Cab *>::iterator cabsIteratorStart = cabs.begin();
                         list<Cab *>::iterator cabsIteratorEnd = cabs.end();
                         while (cabsIteratorStart != cabsIteratorEnd) {
@@ -134,7 +114,8 @@ int main(int argc, char *argv[]) {
                             if ((*cabsIteratorStart)->getId() == atoi(point[0])) {
                                 (*cabsIteratorStart)->setLocation(Point(atoi(point[1]), atoi(point[2])));
                                 //if a cab finished its trip, we update his status of hasTrip.
-                                if ((*cabsIteratorStart)->getTrip()->getEnd() == (*cabsIteratorStart)->getLocation()) {
+                                if ((*cabsIteratorStart)->getTrip()->getEnd() ==
+                                    (*cabsIteratorStart)->getLocation()) {
                                     (*cabsIteratorStart)->setHasTrip(false);
                                 }
                             }

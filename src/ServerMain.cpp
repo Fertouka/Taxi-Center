@@ -22,8 +22,8 @@ public:
     Tcp *socket;
     int clientDescriptor;
     std::list <string> *serCabs;
-    std::list <string> *currentLocation;
-    ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc, std::list <string> *sercabs, std::list <string> *str){
+    string* currentLocation;
+    ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc, std::list <string> *sercabs, string* str){
         tc = t;
         socket = sock;
         clientDescriptor = clientDesc;
@@ -79,7 +79,8 @@ void* connectClient(void* socketDesc) {
     }
     while (choice != 7) {
         if (choice == 9 && currentLocationInTripFlag) {
-            list<string>::iterator startL;
+            manager->socket->sendData(*(manager->currentLocation), manager->clientDescriptor);
+            /*list<string>::iterator startL;
             list<string>::iterator endL;
             //initializing the start iterator to point to the start of the serialized cabs list
             startL = manager->currentLocation->begin();
@@ -96,7 +97,7 @@ void* connectClient(void* socketDesc) {
                 //std::advance(startC, 1);
                 startL++;
                 countThreads++;
-            }
+            }*/
         }
     }
     pthread_exit(socketDesc);
@@ -168,7 +169,7 @@ int main(int argc, char *argv[]) {
     std::list <Trip*> trips;
     std::list <Cab*> cabs;
     std::list <string> serCabs;
-    std::list <string> currentLocation;
+    string currentLocation;
     int id;
     //choice of the user
     int time = 0;
@@ -307,36 +308,6 @@ int main(int argc, char *argv[]) {
                         //threads.push_back(thread);
 
                     }
-                    //assigning the trips to the drivers
-                    //tc.assignTripsToDrivers();
-                    //creating and initializing the cabs list iterator
-                    /*list<Cab*>::iterator cabsIteratorStart = cabs.begin();
-                    list<Cab*>::iterator cabsIteratorEnd = cabs.end();
-                    //moving on the cabs list
-                    while (cabsIteratorStart != cabsIteratorEnd) {
-                        //checking if the current cab has trip
-                        if ((*cabsIteratorStart)->isHasTrip()) {
-                            //serializing the trip of the cab
-                            string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId()) + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getRideNum()) + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getStart().getX())
-                                         + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getStart().getY())
-                                         + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getEnd().getX())
-                                         + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getEnd().getY())
-                                         + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getNumOfPassengers())
-                                         + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTariff()) + "," +
-                                    boost::lexical_cast<string>((*cabsIteratorStart)->getTrip()->getTimeOfStart());
-                            //sending to the client the serialized trip
-                            server.sendData(str, clientDescriptor);
-                        }
-                        //advancing the iterator
-                        cabsIteratorStart++;
-                    }*/
                     //there are no trips
                 } else {
                     //cresating and initializing the cab's list iterator
@@ -355,10 +326,10 @@ int main(int argc, char *argv[]) {
                         //updating the cabs new location
                         Point newLocation = (*cabsIteratorStart)->getLocation();
                         //serializing the cab's new location'
-                        string str = boost::lexical_cast<string>((*cabsIteratorStart)->getId())
+                        currentLocation += boost::lexical_cast<string>((*cabsIteratorStart)->getId())
                                      + "," + boost::lexical_cast<string>(newLocation.getX()) + "," +
-                                     boost::lexical_cast<string>(newLocation.getY());
-                        currentLocation.push_back(str);
+                                     boost::lexical_cast<string>(newLocation.getY()) + "_";
+                        //currentLocation.push_back(str);
                         //sending to the client the cab's new location
                         //server.sendData(str, clientDescriptor);
                         //advancing the iterator
