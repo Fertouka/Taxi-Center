@@ -1,7 +1,6 @@
 // fertoud 316295005 amitayi 203839030
 
 #include <iostream>
-#include <cstdlib>
 #include <boost/lexical_cast.hpp>
 #include "Driver.h"
 #include "StandardCab.h"
@@ -13,7 +12,6 @@
 using namespace std;
 
 int choice;
-//int countThreads = 0;
 bool currentLocationInTripFlag = false;
 
 class ThreadManagement {
@@ -37,9 +35,7 @@ public:
 void* connectClient(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
     char buffer[4096];
-    //int clientDescriptor = manager->socket->acceptOneClient();
     manager->socket->sendData("1", manager->clientDescriptor);
-    //manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     //recieving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     char *driver[5];
@@ -59,8 +55,6 @@ void* connectClient(void* socketDesc) {
     manager->tc->addDriver(d);
     //assigning the cabs to the drivers
     manager->tc->assignCabsToDrivers();
-    //send the num of cabs the client will get.
-    //manager->socket->.sendData(boost::lexical_cast<string>(manager->serCabs.size()), manager->clientDescriptor);//////
     //initializing the the sercabs list iterator
     list<string>::iterator startC;
     list<string>::iterator endC;
@@ -74,32 +68,14 @@ void* connectClient(void* socketDesc) {
         //sending to the client the serialized cab
         manager->socket->sendData(str, manager->clientDescriptor);
         //advancing the cab's list iterator by one step
-        //std::advance(startC, 1);
         startC++;
     }
     while (choice != 7) {
         if (choice == 9 && currentLocationInTripFlag) {
             manager->socket->sendData(*(manager->currentLocation), manager->clientDescriptor);
-            /*list<string>::iterator startL;
-            list<string>::iterator endL;
-            //initializing the start iterator to point to the start of the serialized cabs list
-            startL = manager->currentLocation->begin();
-            //initializing the end iterator to point to the end of the serialized cabs list
-            endL = manager->currentLocation->end();
-            //manager->socket->sendData(manager->currentLocation->front(), manager->clientDescriptor);
-            while (endL != startL) {
-                //initializing a string to be the current serialized cab from the list
-                string str = *startL;
-                //sending to the client the serialized cab
-                manager->socket->sendData(str, manager->clientDescriptor);
-                //manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
-                //advancing the cab's list iterator by one step
-                //std::advance(startC, 1);
-                startL++;
-                countThreads++;
-            }*/
         }
     }
+    //manager->socket->sendData("7", manager->clientDescriptor);
     pthread_exit(socketDesc);
 }
 
@@ -109,38 +85,26 @@ void* connectBFS(void* socketDesc) {
     pthread_exit(socketDesc);
 }
 
-    void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clientsDescriptors) {
-        list <int>::iterator startC;
-        list <int>::iterator endC;
-        startC = clientsDescriptors.begin();
-        //initializing the end iterator to point to the end of the serialized cabs list
-        endC = clientsDescriptors.end();
-        if(sendFlag) {
-            while (endC != startC) {
-                int desc = *startC;
-                (*server).sendData(boost::lexical_cast<string>(choice), desc);
-                //char buff[1234];
-                //(*server).receiveData(buff, sizeof(buff), desc);
-                // std::advance(startC, 1);
-                startC++;
-            }
+void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clientsDescriptors) {
+    list <int>::iterator startC;
+    list <int>::iterator endC;
+    startC = clientsDescriptors.begin();
+    //initializing the end iterator to point to the end of the serialized cabs list
+    endC = clientsDescriptors.end();
+    if(sendFlag) {
+        while (endC != startC) {
+            int desc = *startC;
+            (*server).sendData(boost::lexical_cast<string>(choice), desc);
+            startC++;
         }
     }
+}
 
 int main(int argc, char *argv[]) {
     Tcp server(1, atoi(argv[1]));
     server.initialize();
-    list <pthread_t> threads;
     cout <<"initialized\n";
-    char buffer[1024];
     list <int> clientDescriptors;
-    //int clientDescriptor;
-    //clientDescriptor = server.acceptOneClient();
-    //clientDescriptors.push_back(clientDescriptor);
-    //server.receiveData(buffer, sizeof(buffer), clientDescriptor);
-    //cout << buffer;
-    //dummy for signs we ignore in the input
-
     char dummy;
     //in this line we creating the grid
     Grid *grid;
@@ -184,9 +148,6 @@ int main(int argc, char *argv[]) {
         switch (choice) {
             //create a driver
             case 1: {
-                //sending to the client the operation
-                //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
-
                 //recieving from the user how many drivers he wants
                 cin >> numOfDrivers;
                 for(int i = 0; i < numOfDrivers; i++) {
@@ -196,7 +157,6 @@ int main(int argc, char *argv[]) {
                                                                      &currentLocation);
                     clientDescriptors.push_back(clientDescriptor);
                     pthread_create(&thread, NULL, connectClient, manager);
-                    //threads.push_back(thread);
 
                 }
                 sendFlag = true;
@@ -206,7 +166,6 @@ int main(int argc, char *argv[]) {
             case 2: {
                 //sending the client that option 2 was chosen
                 sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
-                //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 int startX;
                 int startY;
                 int endX;
@@ -243,7 +202,7 @@ int main(int argc, char *argv[]) {
                     //creating a luxury cab from the user's input
                     LuxuryCab *cab = new LuxuryCab(id, typeOfCab, manufacturer, color);
                     cab->setLocation(Point(0,0));
-                    //pushing the cab to ther cabs list
+                    //pushing the cab to their cabs list
                     cabs.push_back(cab);
                 }
                 break;
@@ -291,22 +250,14 @@ int main(int argc, char *argv[]) {
                 //sending the client that option 9 was chosen
                 sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                 currentLocationInTripFlag = false;
-                /*if (numOfDrivers == countThreads) {
-                    currentLocation.clear();
-                    countThreads = 0;
-                }*/
-                //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
                 //checking if there are trips
                 if (!trips.empty()) {
                     for(int i = 0; i < trips.size(); i++) {
                         pthread_t thread;
-                        //int clientDescriptor = server.acceptOneClient();
-                        ThreadManagement* manager = new ThreadManagement(&tc, &server, 0, NULL, NULL);
-                        //clientDescriptors.push_back(clientDescriptor);
+                        ThreadManagement* manager = new ThreadManagement(&tc, &server,
+                                                                         0, NULL, NULL);
                         pthread_create(&thread, NULL, connectBFS, manager);
                         pthread_join(thread ,NULL);
-                        //threads.push_back(thread);
-
                     }
                     //there are no trips
                 } else {
@@ -329,9 +280,6 @@ int main(int argc, char *argv[]) {
                         currentLocation += boost::lexical_cast<string>((*cabsIteratorStart)->getId())
                                      + "," + boost::lexical_cast<string>(newLocation.getX()) + "," +
                                      boost::lexical_cast<string>(newLocation.getY()) + "_";
-                        //currentLocation.push_back(str);
-                        //sending to the client the cab's new location
-                        //server.sendData(str, clientDescriptor);
                         //advancing the iterator
                         cabsIteratorStart++;
                     }
@@ -340,14 +288,15 @@ int main(int argc, char *argv[]) {
                 //advancig the time
                 time++;
                 break;
-            }
+            }/*
+            case 7:
+                break;*/
             default:
                 break;
         }
     } while (choice != 7);
     //tell to client to get close
-    sendChoiceToClients(&server, sendFlag,choice, clientDescriptors);
-    //server.sendData(boost::lexical_cast<string>(choice), clientDescriptor);
+    sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
     drivers.clear();
     cabs.clear();
     trips.clear();
