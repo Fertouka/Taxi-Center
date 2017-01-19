@@ -39,7 +39,7 @@ void* connectClient(void* socketDesc) {
     manager->socket->sendData("1", manager->clientDescriptor);
     //recieving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
-    pthread_mutex_t driverMutex;
+    pthread_mutex_t driverMutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&driverMutex);
     char *driver[5];
     int i = 0;
@@ -85,7 +85,7 @@ void* connectClient(void* socketDesc) {
 
 void* connectBFS(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
-    pthread_mutex_t bfsMutex;
+    pthread_mutex_t bfsMutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&bfsMutex);
     manager->tc->assignTripToDriver();
     pthread_mutex_unlock(&bfsMutex);
