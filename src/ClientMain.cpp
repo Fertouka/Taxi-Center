@@ -111,6 +111,7 @@ int main(int argc, char *argv[]) {
     } while (choice[0] != '7');
     drivers.clear();
     cabs.clear();
+    client.~Tcp();
     return 0;
 }
 

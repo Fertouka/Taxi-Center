@@ -16,7 +16,7 @@
 
 using namespace std;
 
-class Server {
+class Server: public Tcp {
 public:
 	Server(int port);
 	void Start();

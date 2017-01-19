@@ -14,6 +14,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <unistd.h>
 #include "Tcp.h"
 
 /***********************************************************************
@@ -36,7 +37,7 @@ Tcp::Tcp(bool isServers, int port_num) {
 * The Function operation: default destructor					       *
 ***********************************************************************/
 Tcp::~Tcp() {
-    // TODO Auto-generated destructor stub
+    close(this->socketDescriptor);
 }
 
 /***********************************************************************
@@ -116,8 +117,9 @@ int Tcp::acceptOneClient() {
                               (struct sockaddr *) &client_sin, &addr_len);
     if (clientDescriptor < 0) {
         //return an error represent error at this method
-        perror("ERROR_CONNECT - in acceptOneClient()\n");
-        exit(1);
+       perror("ERROR_CONNECT - in acceptOneClient()\n");
+       exit(1);
+
     }
     return  clientDescriptor;
 }
@@ -171,11 +173,13 @@ int Tcp::receiveData(char* buffer, int size, int clientDescriptor) {
             host = "CONNECTION_CLOSED - in receiveData() on " + host;
             perror(host.c_str());
             exit(1);
+           // exit (0);
         } else {
             host = "ERROR_RECEIVE - in receiveData() on " + host;
             //return an error represent error at this method
             perror(host.c_str());
             exit(1);
+           // exit(0);
         }
     }
     //return correct if there were no problem

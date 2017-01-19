@@ -157,7 +157,7 @@ void TaxiCenter::assignTripToDriver() {
 }
 
 void TaxiCenter::event() {
-    std::cout << "event";
+  //  std::cout << "event";
 }
 
 list<Driver *> *TaxiCenter::getEmployees() const {

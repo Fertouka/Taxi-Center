@@ -134,7 +134,6 @@ void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clie
 int main(int argc, char *argv[]) {
     Tcp server(1, atoi(argv[1]));
     server.initialize();
-    cout <<"initialized\n";
     list <int> clientDescriptors;
     char dummy;
     //in this line we creating the grid
@@ -333,6 +332,9 @@ int main(int argc, char *argv[]) {
     drivers.clear();
     cabs.clear();
     trips.clear();
+    server.~Tcp();
+
+
     return 0;
 }
 

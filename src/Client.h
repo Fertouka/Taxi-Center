@@ -20,7 +20,7 @@
 
 using namespace std;
 
-class Client {
+class Client: public Tcp {
 public:
 	Client(char* ip, int port, string name);
 	void Connect();
