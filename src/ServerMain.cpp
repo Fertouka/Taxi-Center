@@ -39,7 +39,6 @@ void* connectClient(void* socketDesc) {
     manager->socket->sendData("1", manager->clientDescriptor);
     //recieving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
-    cout << buffer;
     pthread_mutex_t driverMutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&driverMutex);
     char *driver[5];
@@ -262,7 +261,8 @@ int main(int argc, char *argv[]) {
                 currentLocationInTripFlag = false;
                 //checking if there are trips
                 if (!trips.empty()) {
-                    for(int i = 0; i < trips.size(); i++) {
+                    int size = trips.size();
+                    for(int i = 0; i < size; i++) {
                         pthread_t thread;
                         ThreadManagement* manager = new ThreadManagement(&tc, &server,
                                                                          0, NULL, NULL);

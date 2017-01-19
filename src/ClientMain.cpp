@@ -10,8 +10,8 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    Tcp* client = new Tcp(0, atoi(argv[2]));
-    client->initialize();
+    Tcp client(0, atoi(argv[2]));
+    client.initialize();
     std::list <Driver*> drivers;
     std::list <Cab*> cabs;
     TaxiCenter tc = TaxiCenter(&drivers, &cabs);
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     bool hasANewTrip = true;
     char choice[2];
     do {
-        client->receiveData(choice, sizeof(choice), 0);
+        client.receiveData(choice, sizeof(choice), 0);
         switch (choice[0]) {
         //create a driver
         case '1': {
@@ -40,12 +40,12 @@ int main(int argc, char *argv[]) {
                              status + "," + boost::lexical_cast<string>(exp) + "," +
                              boost::lexical_cast<string>(cabId);
                 drivers.push_back(d);
-                client->sendData(str, 0);
+                client.sendData(str, 0);
                 numOfDrivers--;
             }
             while (numOfCabs != 0) {
                 //getting a serialized cab
-                client->receiveData(buffer, sizeof(buffer), 0);
+                client.receiveData(buffer, sizeof(buffer), 0);
                 char *cab[4];
                 int i = 0;
                 char *split;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
                 //else we dont have a new trip
             } else {
                 //client receive a new location of each driver
-                client->receiveData(buffer, sizeof(buffer), 0);
+                client.receiveData(buffer, sizeof(buffer), 0);
                 char* token1;
                 char* token2;
                 char *point[3];
