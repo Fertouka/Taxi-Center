@@ -111,11 +111,9 @@ int Tcp::initialize() {
 int Tcp::acceptOneClient() {
     int clientDescriptor = 0;
     struct sockaddr_in client_sin;
-    //cout << client_sin.sin_addr.s_addr;
     unsigned int addr_len = sizeof(client_sin);
     clientDescriptor = accept(this->socketDescriptor,
                               (struct sockaddr *) &client_sin, &addr_len);
-    cout << "after accept";
     if (clientDescriptor < 0) {
         //return an error represent error at this method
         perror("ERROR_CONNECT - in acceptOneClient()\n");

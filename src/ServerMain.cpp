@@ -19,15 +19,15 @@ public:
     TaxiCenter* tc;
     Tcp *socket;
     int clientDescriptor;
-    std::list <string> *serCabs;
-    string* currentLocation;
+    list <string> *serCabs;
+    list <string> *serLocation;
     ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc,
-                     list <string> *sercabs, string* str){
+                     list <string> *sercabs, list <string> *serLocations){
         tc = t;
         socket = sock;
         clientDescriptor = clientDesc;
         serCabs = sercabs;
-        currentLocation = str;
+        serLocation = serLocations;
     }
 
     ~ThreadManagement();
@@ -78,7 +78,29 @@ void* connectClient(void* socketDesc) {
     }
     while (choice != 7) {
         if (choice == 9 && currentLocationInTripFlag) {
-            manager->socket->sendData(*(manager->currentLocation), manager->clientDescriptor);
+            manager->socket->sendData("9", manager->clientDescriptor);
+            manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
+            pthread_mutex_t locationMutex = PTHREAD_MUTEX_INITIALIZER;
+            pthread_mutex_lock(&locationMutex);
+            list<string>::iterator startL;
+            list<string>::iterator endL;
+            //initializing the start iterator to point to the start of the serialized cabs list
+            startL = manager->serLocation->begin();
+            //initializing the end iterator to point to the end of the serialized cabs list
+            endL = manager->serLocation->end();
+            while (endL != startL) {
+                //initializing a string to be the current serialized cab from the list
+                string str = *startL;
+                if (d->getCabId() == (str[0] - '0')) {
+                    //sending to the client the serialized location
+                    manager->socket->sendData(str, manager->clientDescriptor);
+                    manager->serLocation->erase(startL);
+                    break;
+                }
+                //advancing the cab's list iterator by one step
+                startL++;
+            }
+            pthread_mutex_unlock(&locationMutex);
         }
     }
     //manager->socket->sendData("7", manager->clientDescriptor);
@@ -142,6 +164,7 @@ int main(int argc, char *argv[]) {
     std::list <Trip*> trips;
     std::list <Cab*> cabs;
     std::list <string> serCabs;
+    std::list <string> serLocations;
     string currentLocation;
     int id;
     //choice of the user
@@ -163,7 +186,7 @@ int main(int argc, char *argv[]) {
                     pthread_t thread;
                     int clientDescriptor = server.acceptOneClient();
                     ThreadManagement* manager = new ThreadManagement(&tc, &server, clientDescriptor, &serCabs,
-                                                                     &currentLocation);
+                                                                     &serLocations);
                     clientDescriptors.push_back(clientDescriptor);
                     pthread_create(&thread, NULL, connectClient, manager);
 
@@ -185,7 +208,7 @@ int main(int argc, char *argv[]) {
                 cin >> id >> dummy >> startX >> dummy >> startY >> dummy
                     >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
                 //creating and pushing the trip to the trips list
-                trips.push_back(new Trip(id, Point(startX, startY), Point(endX, endY),
+                trips.push_front(new Trip(id, Point(startX, startY), Point(endX, endY),
                                          numOfPassenger, tariff, timeOfStart));
                 break;
             }
@@ -256,11 +279,11 @@ int main(int argc, char *argv[]) {
             }
             //advancing the clock and the cabs by one step (if it's the time to advance them)
             case 9: {
-                //sending the client that option 9 was chosen
-                sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                 currentLocationInTripFlag = false;
                 //checking if there are trips
                 if (!trips.empty()) {
+                    //sending the client that option 9 was chosen
+                    sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                     int size = trips.size();
                     for(int i = 0; i < size; i++) {
                         pthread_t thread;
@@ -287,9 +310,9 @@ int main(int argc, char *argv[]) {
                         //updating the cabs new location
                         Point newLocation = (*cabsIteratorStart)->getLocation();
                         //serializing the cab's new location'
-                        currentLocation += boost::lexical_cast<string>((*cabsIteratorStart)->getId())
+                        serLocations.push_back(boost::lexical_cast<string>((*cabsIteratorStart)->getId())
                                      + "," + boost::lexical_cast<string>(newLocation.getX()) + "," +
-                                     boost::lexical_cast<string>(newLocation.getY()) + "_";
+                                     boost::lexical_cast<string>(newLocation.getY()));
                         //advancing the iterator
                         cabsIteratorStart++;
                     }

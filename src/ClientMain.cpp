@@ -81,31 +81,27 @@ int main(int argc, char *argv[]) {
                 hasANewTrip = false;
                 //else we dont have a new trip
             } else {
+                client.sendData("a", 0);
                 //client receive a new location of each driver
                 client.receiveData(buffer, sizeof(buffer), 0);
-                char* token1;
-                char* token2;
+
                 char *point[3];
-                int j;
-                token1 = strtok(buffer, "_");
-                while (token1 != NULL) {
-                    j = 1;
-                    token2 = strtok(token1, ",");
-                    while (token2 != NULL) {
-                        point[j - 1] = token2;
-                        j++;
-                        token2 = strtok(NULL, ",");
+                int j = 0;
+                char *split;
+                split = strtok(buffer, ",");
+                while (split != NULL && j < 3) {
+                    point[j] = split;
+                    j++;
+                    split = strtok(NULL, ",");
+                }
+                list<Cab *>::iterator cabsIteratorStart = cabs.begin();
+                list<Cab *>::iterator cabsIteratorEnd = cabs.end();
+                while (cabsIteratorStart != cabsIteratorEnd) {
+                    //updating the location for the right cab
+                    if ((*cabsIteratorStart)->getId() == atoi(point[0])) {
+                        (*cabsIteratorStart)->setLocation(Point(atoi(point[1]), atoi(point[2])));
                     }
-                    token1 = strtok(NULL, "_");
-                    list<Cab *>::iterator cabsIteratorStart = cabs.begin();
-                    list<Cab *>::iterator cabsIteratorEnd = cabs.end();
-                    while (cabsIteratorStart != cabsIteratorEnd) {
-                        //updating the location for the right cab
-                        if ((*cabsIteratorStart)->getId() == atoi(point[0])) {
-                            (*cabsIteratorStart)->setLocation(Point(atoi(point[1]), atoi(point[2])));
-                        }
-                        cabsIteratorStart++;
-                    }
+                    cabsIteratorStart++;
                 }
             }
             break;
