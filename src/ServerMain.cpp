@@ -39,6 +39,7 @@ void* connectClient(void* socketDesc) {
     manager->socket->sendData("1", manager->clientDescriptor);
     //recieving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
+    cout << buffer;
     pthread_mutex_t driverMutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&driverMutex);
     char *driver[5];
@@ -69,8 +70,10 @@ void* connectClient(void* socketDesc) {
     while (endC != startC) {
         //initializing a string to be the current serialized cab from the list
         string str = *startC;
-        //sending to the client the serialized cab
-        manager->socket->sendData(str, manager->clientDescriptor);
+        if (d->getCabId() == (str[0] - '0')) {
+            //sending to the client the serialized cab
+            manager->socket->sendData(str, manager->clientDescriptor);
+        }
         //advancing the cab's list iterator by one step
         startC++;
     }
