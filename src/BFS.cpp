@@ -48,12 +48,7 @@ stack<Node*> BFS::PrintTrail(Node* node, Point start) {
         node = node->getFather();
     }
     node->restart();
-   // printStack.push(node);
     return printStack;
-    /*while (!printStack.empty()) {
-        std::cout << (*printStack.top()).getPoint();
-        printStack.pop();
-    }*/
 }
 
 

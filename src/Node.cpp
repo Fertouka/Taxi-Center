@@ -24,7 +24,6 @@ Node::Node(const Point &point, const list<Node *> &neighbours) : point(point), n
 void Node::restart() {
     distance = 0;
     isVisited = false;
-    //father = NULL;
 }
 
 const Point &Node::getPoint() const {
