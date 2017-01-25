@@ -8,7 +8,7 @@ Node::Node() {
     Node::distance = 0;
     Node::isVisited = false;
     Node::neighbours = list<Node*>();
-};
+}
 
 Node::Node(const Point &point) : point(point) {
     Node::distance = 0;

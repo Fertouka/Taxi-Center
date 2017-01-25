@@ -3,7 +3,7 @@
 #ifndef EX1_BFS_H
 #define EX1_BFS_H
 
-#include <vector>
+#include <stack>
 #include "Grid.h"
 #include "Point.h"
 class BFS {
