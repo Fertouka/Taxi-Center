@@ -5,6 +5,7 @@
 #include "src/LuxuryCab.h"
 #include "src/TaxiCenter.h"
 #include "sockets/Tcp.h"
+#include "Checker.h"
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
@@ -27,13 +28,35 @@ int main(int argc, char *argv[]) {
             int numOfDrivers = 1;
             int numOfCabs = 1;
             while (numOfDrivers != 0) {
-                char dummy;
-                int id;
-                int age;
-                char status;
-                int exp;
-                int cabId;
-                cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
+                string stringDriver;
+                getline(cin,stringDriver);
+                if (std::count(stringDriver.begin(),stringDriver.end(),',') != 4) {
+                    choice[0] = 7;
+                    break;
+                }
+                char *input[5];
+                int i = 0;
+                char *split;
+                split = strtok(stringDriver, ",");
+                while (split != NULL && i < 5) {
+                    input[i] = split;
+                    i++;
+                    split = strtok(NULL, ",");
+                }
+                //char dummy;
+
+               // cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
+                Checker checker (*input);
+                if (!checker.CheckClientDriver()) {
+                    choice[0] = 7;
+                    break;
+                }
+
+                int id = atoi(input[0]);
+                int age = atoi(input[1]);
+                char status = *input[2];
+                int exp =  atoi(input[3]);
+                int cabId =  atoi(input[4]);
                 Driver *d = new Driver(id, age, status, exp, cabId);
                 //sending a serialized driver to server
                 string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
