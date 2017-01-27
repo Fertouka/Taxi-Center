@@ -35,7 +35,6 @@ stack<Node *> BFS::bfs(Grid *grid, Point start, Point end) {
             }
             neighbours.pop_front();
         }
-
     }
 }
 

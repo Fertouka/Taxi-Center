@@ -5,7 +5,7 @@
 #include "src/LuxuryCab.h"
 #include "src/TaxiCenter.h"
 #include "sockets/Tcp.h"
-#include "Checker.h"
+#include "src/Checker.h"
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
@@ -46,8 +46,8 @@ int main(int argc, char *argv[]) {
                 //char dummy;
 
                // cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
-                Checker checker (*input);
-                if (!checker.CheckClientDriver()) {
+                Checker checker ;
+                if (!checker.CheckClientDriver(*input)) {
                     choice[0] = 7;
                     break;
                 }

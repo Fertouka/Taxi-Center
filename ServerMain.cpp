@@ -9,6 +9,7 @@
 #include "src/TaxiCenter.h"
 #include "sockets/Tcp.h"
 #include "src/ThreadManagement.h"
+#include "Checker.h"
 
 using namespace std;
 
@@ -125,6 +126,7 @@ void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clie
 }
 
 int main(int argc, char *argv[]) {
+    Checker checker;
     Tcp server(1, atoi(argv[1]));
     server.initialize();
     list <int> clientDescriptors;
@@ -192,6 +194,10 @@ int main(int argc, char *argv[]) {
             case 1: {
                 //recieving from the user how many drivers he wants
                 cin >> numOfDrivers;
+                while (!isdigit(numOfDrivers) || numOfDrivers <=0) {
+                    cout << "-1\n";
+                    cin >> numOfDrivers;
+                }
                 for(int i = 0; i < numOfDrivers; i++) {
                     pthread_t thread;
                     int clientDescriptor = server.acceptOneClient();
@@ -210,15 +216,36 @@ int main(int argc, char *argv[]) {
                 sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                 bool tripFlag = true;
                 do {
-                    int startX;
-                    int startY;
-                    int endX;
-                    int endY;
-                    int numOfPassenger;
-                    int timeOfStart;
-                    double tariff;
-                    cin >> id >> dummy >> startX >> dummy >> startY >> dummy
-                        >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
+                    string tripStr;
+
+                    do {
+                        getline(cin,tripStr);
+                        if (std::count(tripStr.begin(),tripStr.end(),',') != 7) {
+                            cout << "-1\n";
+                            continue;
+                        }
+                        char *input[8];
+                        int i = 0;
+                        char *split;
+                        split = strtok(tripStr, ",");
+                        while (split != NULL && i < 8) {
+                            input[i] = split;
+                            i++;
+                            split = strtok(NULL, ",");
+                        }
+                        checker.CheckServerTripInput(grid,*input);
+                        int startX;
+                        int startY;
+                        int endX;
+                        int endY;
+                        int numOfPassenger;
+                        int timeOfStart;
+                        double tariff;
+
+                    }while ();
+
+                   // cin >> id >> dummy >> startX >> dummy >> startY >> dummy
+                     //   >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
                     if (id < 0)
                     //creating and pushing the trip to the trips list
                     trips.push_front(new Trip(id, Point(startX, startY), Point(endX, endY),
