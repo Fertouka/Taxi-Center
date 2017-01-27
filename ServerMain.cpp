@@ -14,6 +14,16 @@ using namespace std;
 
 int choice;
 bool currentLocationInTripFlag = false;
+/*
+double checkingInput(double input) {
+    while (cin.fail() && input < 0) {
+        cout << -1 << '\n';
+        cin >> input;
+        cin.clear();
+        cin.ignore(256, '\n');
+    }
+    return input;
+}*/
 
 
 void* connectClient(void* socketDesc) {
@@ -119,35 +129,53 @@ int main(int argc, char *argv[]) {
     server.initialize();
     list <int> clientDescriptors;
     char dummy;
+    bool validGridInputFlag = true;
+    bool validObstacle = true;
     //in this line we creating the grid
     Grid *grid;
     //the size of the grid
     int size[2];
-    cin >> size[0] >> size[1];
-    int numOfObstacles;
-    list <Point> obstacles;
-    cin >> numOfObstacles;
-    //creating a list of obstacles
-    if (numOfObstacles != 0) {
-        //Point p = Point();
-        for (int i = 0; i < numOfObstacles; i++) {
-            int x;
-            int y;
-            cin >> x >> dummy >> y;
-            obstacles.push_back(Point(x,y));
+    do {
+        cin >> size[0] >> size[1];
+        while (cin.fail() || size[0] <= 0 || size[1] <= 0) {
+            cout << -1 << '\n';
+            cin >> size[0] >> size[1];
+            cin.clear();
+            cin.ignore(256, '\n');
         }
-        //creating a grid with obstacles
-        grid =new Matrix(size[0], size[1], obstacles);
-    } else {
-        //creating a grid without obstacles
-        grid = new Matrix(size[0], size[1]);
-    }
+        int numOfObstacles;
+        list <Point> obstacles;
+        cin >> numOfObstacles;
+        //creating a list of obstacles
+        if (numOfObstacles != 0) {
+            //Point p = Point();
+            for (int i = 0; i < numOfObstacles; i++) {
+                int x, y;
+                cin >> x >> dummy >> y;
+                if (cin.fail() || x <= 0 || y <= 0 || x > size[0] || y > size[1]) {
+                    cout << -1 << '\n';
+                    validObstacle = false;
+                    break;
+                }
+                obstacles.push_back(Point(x, y));
+            }
+        } else {
+            validGridInputFlag = false;
+            //creating a grid without obstacles
+            grid = new Matrix(size[0], size[1]);
+        }
+
+        if (validObstacle) {
+            //creating a grid with obstacles
+            grid = new Matrix(size[0], size[1], obstacles);
+        }
+    } while (validGridInputFlag);
+
     std::list <Driver*> drivers;
     std::list <Trip*> trips;
     std::list <Cab*> cabs;
     std::list <string> serCabs;
     std::list <string> serLocations;
-    string currentLocation;
     int id;
     //choice of the user
     int time = 0;
@@ -180,19 +208,23 @@ int main(int argc, char *argv[]) {
             case 2: {
                 //sending the client that option 2 was chosen
                 sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
-                int startX;
-                int startY;
-                int endX;
-                int endY;
-                int numOfPassenger;
-                int timeOfStart;
-                double tariff;
-                cin >> id >> dummy >> startX >> dummy >> startY >> dummy
-                    >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
-                //creating and pushing the trip to the trips list
-                trips.push_front(new Trip(id, Point(startX, startY), Point(endX, endY),
-                                         numOfPassenger, tariff, timeOfStart));
-                break;
+                bool tripFlag = true;
+                do {
+                    int startX;
+                    int startY;
+                    int endX;
+                    int endY;
+                    int numOfPassenger;
+                    int timeOfStart;
+                    double tariff;
+                    cin >> id >> dummy >> startX >> dummy >> startY >> dummy
+                        >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
+                    if (id < 0)
+                    //creating and pushing the trip to the trips list
+                    trips.push_front(new Trip(id, Point(startX, startY), Point(endX, endY),
+                                              numOfPassenger, tariff, timeOfStart));
+                    break;
+                } while();
             }
             //create a cab
             case 3: {
@@ -305,6 +337,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             default:
+                cout << -1 << '\n';
                 break;
         }
     } while (choice != 7);

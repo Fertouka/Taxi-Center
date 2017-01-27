@@ -16,8 +16,8 @@ public:
     list <string> *serCabs;
     list <string> *serLocation;
 
-    ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc,
-                     list <string> *sercabs, list <string> *serLocations);
+    ThreadManagement(TaxiCenter *tc, Tcp *socket, int clientDescriptor, list <string> *serCabs,
+                     list <string> *serLocation);
 
     ~ThreadManagement();
 };

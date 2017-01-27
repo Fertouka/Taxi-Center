@@ -4,11 +4,8 @@
 
 #include "ThreadManagement.h"
 
-ThreadManagement::ThreadManagement(TaxiCenter* t, Tcp* sock , int clientDesc,
-        list <string> *sercabs, list <string> *serLocations){
-        tc = t;
-        socket = sock;
-        clientDescriptor = clientDesc;
-        serCabs = sercabs;
-        serLocation = serLocations;
-}
+
+ThreadManagement::ThreadManagement(TaxiCenter *tc, Tcp *socket, int clientDescriptor, list <string> *serCabs,
+                                   list <string> *serLocation) : tc(tc), socket(socket),
+                                                                 clientDescriptor(clientDescriptor), serCabs(serCabs),
+                                                                 serLocation(serLocation) {}

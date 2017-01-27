@@ -15,14 +15,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/ThreadManagement.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Passenger.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Cab.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/BFS.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Driver.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/StandardCab.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Trip.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/TransportationFlow.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/BFS.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Trip.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/StandardCab.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Listener.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/Driver.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Point.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Passenger.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Matrix.h" isTestSource="false" />
