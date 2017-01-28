@@ -190,6 +190,7 @@ int main(int argc, char *argv[]) {
                 driversNumConvert = (char *) driversNum.c_str();
                 if (!isdigit(*driversNumConvert) || atoi(driversNumConvert) <= 0) {
                     cout << "-1\n";
+                    cin.clear();
                     break;
                     //cin >> numOfDrivers;
                     //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
