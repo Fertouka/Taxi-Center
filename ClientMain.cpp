@@ -18,9 +18,13 @@ int main(int argc, char *argv[]) {
     char buffer[4096];
     //using for managing case 9
     bool hasANewTrip = true;
+    bool clientInitialized = false;
     char choice[2];
+    choice[0] = '1';
     do {
-        client.receiveData(choice, sizeof(choice), 0);
+        if(clientInitialized) {
+            client.receiveData(choice, sizeof(choice), 0);
+        }
         switch (choice[0]) {
         //create a driver
         case '1': {
@@ -65,6 +69,7 @@ int main(int argc, char *argv[]) {
                              boost::lexical_cast<string>(cabId);
                 drivers.push_back(d);
                 client.initialize();
+                clientInitialized = true;
                 client.sendData(str, 0);
                 numOfDrivers--;
 
@@ -110,7 +115,6 @@ int main(int argc, char *argv[]) {
                 client.sendData("a", 0);
                 //client receive a new location of each driver
                 client.receiveData(buffer, sizeof(buffer), 0);
-
                 char *point[3];
                 int j = 0;
                 char *split;

@@ -78,7 +78,7 @@ bool Checker::CheckServerCabInput(char *input[4]) {
     char *typeOfCab = input[1];
     char *manufacturer = input[2];
     char *color = input[3];
-    char manufacturers[4] = {'H','s','T','F'};
+    char manufacturers[4] = {'H','S','T','F'};
     char colors[5] = {'R','P','B','G','W'};
     if (isdigit(*id) && atoi( id) >= 0) {
         if (isdigit(*typeOfCab) && (atoi(typeOfCab) == 1 || atoi( typeOfCab) == 2)) {

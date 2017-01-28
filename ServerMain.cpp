@@ -19,7 +19,7 @@ bool currentLocationInTripFlag = false;
 void* connectClient(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
     char buffer[4096];
-    manager->socket->sendData("1", manager->clientDescriptor);
+    //manager->socket->sendData("1", manager->clientDescriptor);
     //recieving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     pthread_mutex_t driverMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -111,7 +111,7 @@ void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clie
             startC++;
         }
     }
-    sleep(1);
+    sleep(2);
 }
 
 int main(int argc, char *argv[]) {
@@ -120,13 +120,14 @@ int main(int argc, char *argv[]) {
     server.initialize();
     list <int> clientDescriptors;
     char dummy;
-    bool validGridInputFlag = true;
+    bool validGridInputFlag ;
     bool validObstacle = true;
     //in this line we creating the grid
     Grid *grid = NULL;//////////////////////////////////////////
     //the size of the grid
     int size[2];
     do {
+        validGridInputFlag = true;
         cin >> size[0] >> size[1];
         while (cin.fail() || size[0] <= 0 || size[1] <= 0) {
             cout << -1 << '\n';
@@ -137,6 +138,13 @@ int main(int argc, char *argv[]) {
         int numOfObstacles;
         list <Point> obstacles;
         cin >> numOfObstacles;
+        if (cin.fail() || numOfObstacles < 0) {
+            cout << -1 << '\n';
+            cin.clear();
+            cin.ignore(256, '\n');
+            validGridInputFlag = false;
+            continue;
+        }
         //creating a list of obstacles
         if (numOfObstacles != 0) {
             //Point p = Point();
@@ -332,6 +340,7 @@ int main(int argc, char *argv[]) {
                 list<Driver *>::iterator end;
                 start = drivers.begin();
                 end = drivers.end();
+                bool isInList = false;
                 //here we start iterating on the drivers list
                 while (start != end) {
                     Driver *d = *start;
@@ -339,10 +348,14 @@ int main(int argc, char *argv[]) {
                     if (id == d->getId()) {
                         //the id's are equal-> we are getting the current drivers position
                         d->getDriverLocation();
+                        isInList = true;
                         break;
                     }
                     //advancing the iterator
                     start++;
+                }
+                if (!isInList) {
+                    cout << "-1\n";
                 }
                 break;
             }
