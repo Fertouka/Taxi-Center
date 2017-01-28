@@ -9,23 +9,12 @@
 #include "src/TaxiCenter.h"
 #include "sockets/Tcp.h"
 #include "src/ThreadManagement.h"
-#include "Checker.h"
+#include "src/Checker.h"
 
 using namespace std;
 
 int choice;
 bool currentLocationInTripFlag = false;
-/*
-double checkingInput(double input) {
-    while (cin.fail() && input < 0) {
-        cout << -1 << '\n';
-        cin >> input;
-        cin.clear();
-        cin.ignore(256, '\n');
-    }
-    return input;
-}*/
-
 
 void* connectClient(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
@@ -134,7 +123,7 @@ int main(int argc, char *argv[]) {
     bool validGridInputFlag = true;
     bool validObstacle = true;
     //in this line we creating the grid
-    Grid *grid;
+    Grid *grid = NULL;//////////////////////////////////////////
     //the size of the grid
     int size[2];
     do {
@@ -171,7 +160,7 @@ int main(int argc, char *argv[]) {
             //creating a grid with obstacles
             grid = new Matrix(size[0], size[1], obstacles);
         }
-    } while (validGridInputFlag);
+    } while (!validGridInputFlag);
 
     std::list <Driver*> drivers;
     std::list <Trip*> trips;
@@ -193,15 +182,25 @@ int main(int argc, char *argv[]) {
             //create a driver
             case 1: {
                 //recieving from the user how many drivers he wants
-                cin >> numOfDrivers;
-                while (!isdigit(numOfDrivers) || numOfDrivers <=0) {
+                string driversNum;
+                char *driversNumConvert;
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                //cin >> numOfDrivers;
+                getline(cin, driversNum);
+                driversNumConvert = (char *) driversNum.c_str();
+                if (!isdigit(*driversNumConvert) || atoi(driversNumConvert) <= 0) {
                     cout << "-1\n";
-                    cin >> numOfDrivers;
+                    break;
+                    //cin >> numOfDrivers;
+                    //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    //getline(cin, driversNum);
+                    //driversNumConvert = (char *) driversNum.c_str();
                 }
-                for(int i = 0; i < numOfDrivers; i++) {
+                numOfDrivers = atoi(driversNumConvert);
+                for (int i = 0; i < numOfDrivers; i++) {
                     pthread_t thread;
                     int clientDescriptor = server.acceptOneClient();
-                    ThreadManagement* manager = new ThreadManagement(&tc, &server, clientDescriptor, &serCabs,
+                    ThreadManagement *manager = new ThreadManagement(&tc, &server, clientDescriptor, &serCabs,
                                                                      &serLocations);
                     clientDescriptors.push_back(clientDescriptor);
                     pthread_create(&thread, NULL, connectClient, manager);
@@ -210,55 +209,86 @@ int main(int argc, char *argv[]) {
                 sendFlag = true;
                 break;
             }
-            //create a trip
+                //create a trip
             case 2: {
                 //sending the client that option 2 was chosen
                 sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
-                bool tripFlag = true;
-                do {
-                    string tripStr;
-
-                    do {
-                        getline(cin,tripStr);
-                        if (std::count(tripStr.begin(),tripStr.end(),',') != 7) {
-                            cout << "-1\n";
-                            continue;
-                        }
-                        char *input[8];
-                        int i = 0;
-                        char *split;
-                        split = strtok(tripStr, ",");
-                        while (split != NULL && i < 8) {
-                            input[i] = split;
-                            i++;
-                            split = strtok(NULL, ",");
-                        }
-                        checker.CheckServerTripInput(grid,*input);
-                        int startX;
-                        int startY;
-                        int endX;
-                        int endY;
-                        int numOfPassenger;
-                        int timeOfStart;
-                        double tariff;
-
-                    }while ();
-
-                   // cin >> id >> dummy >> startX >> dummy >> startY >> dummy
-                     //   >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
-                    if (id < 0)
-                    //creating and pushing the trip to the trips list
-                    trips.push_front(new Trip(id, Point(startX, startY), Point(endX, endY),
-                                              numOfPassenger, tariff, timeOfStart));
+                string tripStr;
+                int startX;
+                int startY;
+                int endX;
+                int endY;
+                int numOfPassenger;
+                int timeOfStart;
+                double tariff;
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                getline(cin, tripStr);
+                if (std::count(tripStr.begin(), tripStr.end(), ',') != 7) {
+                    cout << "-1\n";
                     break;
-                } while();
+                }
+                char *input[8];
+                int i = 0;
+                char *split;
+                char *tripStrConvert = (char *) tripStr.c_str();
+                split = strtok(tripStrConvert, ",");
+                while (split != NULL && i < 8) {
+                    input[i] = split;
+                    i++;
+                    split = strtok(NULL, ",");
+                }
+                if (!checker.CheckServerTripInput(grid, input)) {
+                    cout << "-1\n";
+                    break;
+                }
+                id = atoi(input[0]);
+                startX = atoi(input[1]);
+                startY = atoi(input[2]);
+                endX = atoi(input[3]);
+                endY = atoi(input[4]);
+                numOfPassenger = atoi(input[5]);
+                timeOfStart = atoi(input[7]);
+                tariff = atoi(input[6]);
+                // cin >> id >> dummy >> startX >> dummy >> startY >> dummy
+                //   >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
+                //  if (id < 0)
+                //creating and pushing the trip to the trips list
+                trips.push_front(new Trip(id, Point(startX, startY), Point(endX, endY),
+                                          numOfPassenger, tariff, timeOfStart));
+                break;
+                // } while();
             }
-            //create a cab
+                //create a cab
             case 3: {
                 int typeOfCab;
                 char manufacturer;
                 char color;
-                cin >> id >> dummy >> typeOfCab >> dummy >> manufacturer >> dummy >> color;
+                string cabString;
+                char *input[4];
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                getline(cin, cabString);
+                if (std::count(cabString.begin(), cabString.end(), ',') != 3) {
+                    cout << "-1\n";
+                    break;
+                }
+                int i = 0;
+                char *split;
+                char *cabStrConvert = (char *) cabString.c_str();
+                split = strtok(cabStrConvert, ",");
+                while (split != NULL && i < 4) {
+                    input[i] = split;
+                    i++;
+                    split = strtok(NULL, ",");
+                }
+                if (!checker.CheckServerCabInput(input)) {
+                    cout << "-1\n";
+                    break;
+                }
+                id = atoi(input[0]);
+                typeOfCab = atoi(input[1]);
+                manufacturer = *input[2];
+                color = *input[3];
+                //cin >> id >> dummy >> typeOfCab >> dummy >> manufacturer >> dummy >> color;
                 //creating a serialized cab string from the users input
                 string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(typeOfCab)
                              + "," + manufacturer + "," + color;
@@ -268,21 +298,34 @@ int main(int argc, char *argv[]) {
                 if (typeOfCab == 1) {
                     //creating a standard cab from the user's input
                     StandardCab *cab = new StandardCab(id, typeOfCab, manufacturer, color);
-                    cab->setLocation(Point(0,0));
+                    cab->setLocation(Point(0, 0));
                     //pushing the cab to the list
                     cabs.push_back(cab);
                 } else {
                     //creating a luxury cab from the user's input
                     LuxuryCab *cab = new LuxuryCab(id, typeOfCab, manufacturer, color);
-                    cab->setLocation(Point(0,0));
+                    cab->setLocation(Point(0, 0));
                     //pushing the cab to their cabs list
                     cabs.push_back(cab);
                 }
                 break;
             }
-            //getting the location of a driver
+                //getting the location of a driver
             case 4: {
-                cin >> id;
+                string idString;
+                char *idStringConvert;
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                //cin >> numOfDrivers;
+                getline(cin, idString);
+                idStringConvert = (char *) idString.c_str();
+                while (!isdigit(*idStringConvert) || atoi(idStringConvert) < 0) {
+                    cout << "-1\n";
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    getline(cin, idString);
+                    idStringConvert = (char *) idString.c_str();
+                }
+                //cin >> id;
+                id = atoi(idStringConvert);
                 //creating and initializing iterator for the drivers list
                 list<Driver *>::iterator start;
                 list<Driver *>::iterator end;
@@ -302,11 +345,11 @@ int main(int argc, char *argv[]) {
                 }
                 break;
             }
-            //all drivers are driving
+                //all drivers are driving
             case 6: {
                 //creating and initializing the cabs list iterator
-                list<Cab*>::iterator cabsIteratorStart = cabs.begin();
-                list<Cab*>::iterator cabsIteratorEnd = cabs.end();
+                list<Cab *>::iterator cabsIteratorStart = cabs.begin();
+                list<Cab *>::iterator cabsIteratorEnd = cabs.end();
                 //moving on the cabs list
                 while (cabsIteratorStart != cabsIteratorEnd) {
                     //"telling" the current cab to drive
@@ -318,7 +361,7 @@ int main(int argc, char *argv[]) {
                 }
                 break;
             }
-            //advancing the clock and the cabs by one step (if it's the time to advance them)
+                //advancing the clock and the cabs by one step (if it's the time to advance them)
             case 9: {
                 currentLocationInTripFlag = false;
                 //checking if there are trips
@@ -326,22 +369,22 @@ int main(int argc, char *argv[]) {
                     //sending the client that option 9 was chosen
                     sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                     int size = trips.size();
-                    for(int i = 0; i < size; i++) {
+                    for (int i = 0; i < size; i++) {
                         pthread_t thread;
-                        ThreadManagement* manager = new ThreadManagement(&tc, &server,
+                        ThreadManagement *manager = new ThreadManagement(&tc, &server,
                                                                          0, NULL, NULL);
                         pthread_create(&thread, NULL, connectBFS, manager);
-                        pthread_join(thread ,NULL);
+                        pthread_join(thread, NULL);
                     }
                     //there are no trips
                 } else {
                     //cresating and initializing the cab's list iterator
-                    list<Cab*>::iterator cabsIteratorStart = cabs.begin();
-                    list<Cab*>::iterator cabsIteratorEnd = cabs.end();
+                    list<Cab *>::iterator cabsIteratorStart = cabs.begin();
+                    list<Cab *>::iterator cabsIteratorEnd = cabs.end();
                     //moving on the cab's list
                     while (cabsIteratorStart != cabsIteratorEnd) {
                         //checking if the current cab has a trip
-                        if((*cabsIteratorStart)->isHasTrip()) {
+                        if ((*cabsIteratorStart)->isHasTrip()) {
                             //checking if now is the time to advance the trip
                             if ((*cabsIteratorStart)->getTrip()->getTimeOfStart() == time) {
                                 //advancing the trip
@@ -352,8 +395,8 @@ int main(int argc, char *argv[]) {
                         Point newLocation = (*cabsIteratorStart)->getLocation();
                         //serializing the cab's new location'
                         serLocations.push_back(boost::lexical_cast<string>((*cabsIteratorStart)->getId())
-                                     + "," + boost::lexical_cast<string>(newLocation.getX()) + "," +
-                                     boost::lexical_cast<string>(newLocation.getY()));
+                                               + "," + boost::lexical_cast<string>(newLocation.getX()) + "," +
+                                               boost::lexical_cast<string>(newLocation.getY()));
                         //advancing the iterator
                         cabsIteratorStart++;
                     }
@@ -364,7 +407,9 @@ int main(int argc, char *argv[]) {
                 break;
             }
             default:
+                if (choice != 7) {
                 cout << -1 << '\n';
+        }
                 break;
         }
     } while (choice != 7);
