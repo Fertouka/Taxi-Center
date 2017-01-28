@@ -49,9 +49,10 @@ void Matrix::create() {
     //updating the obstacles in the matrix
     if (!obstacles.empty()) {
         std::list<Point> copyOfObstacles (obstacles);
-        for (int i = 0; i < copyOfObstacles.size(); ++i) {
-            Point location = (*locationInGrid(copyOfObstacles.front())).getPoint();
-            matrix[location.getX()][location.getY()].setDistance(-1);
+        int size = copyOfObstacles.size();
+        for (int i = 0; i < size; ++i) {
+            Node* location = locationInGrid(copyOfObstacles.front());
+            (*location).setDistance(-1);
             copyOfObstacles.pop_front();
         }
     }
