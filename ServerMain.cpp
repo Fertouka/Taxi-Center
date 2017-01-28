@@ -111,7 +111,7 @@ void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clie
             startC++;
         }
     }
-    sleep(2);
+    sleep(1);
 }
 
 int main(int argc, char *argv[]) {
@@ -130,9 +130,9 @@ int main(int argc, char *argv[]) {
         cin >> size[0] >> size[1];
         while (cin.fail() || size[0] <= 0 || size[1] <= 0) {
             cout << -1 << '\n';
-            cin >> size[0] >> size[1];
             cin.clear();
             cin.ignore(256, '\n');
+            cin >> size[0] >> size[1];
         }
         int numOfObstacles;
         list <Point> obstacles;
