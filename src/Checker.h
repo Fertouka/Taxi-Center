@@ -13,9 +13,9 @@ public:
     Checker();
 
 public:
-    bool CheckClientDriver(char *driver);
-    bool CheckServerTripInput(Grid *grid,char *input);
-    bool CheckServerCabInput(char *input);
+    bool CheckClientDriver(char *driver[5]);
+    bool CheckServerTripInput(Grid *grid,char *input[8]);
+    bool CheckServerCabInput(char *input[4]);
 
 };
 

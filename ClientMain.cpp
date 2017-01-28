@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
             int numOfCabs = 1;
             while (numOfDrivers != 0) {
                 string stringDriver;
+               // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin,stringDriver);
                 if (std::count(stringDriver.begin(),stringDriver.end(),',') != 4) {
                     choice[0] = 7;
@@ -37,7 +38,8 @@ int main(int argc, char *argv[]) {
                 char *input[5];
                 int i = 0;
                 char *split;
-                split = strtok(stringDriver, ",");
+                char *stringDriverConvert = (char *) stringDriver.c_str();
+                split = strtok(stringDriverConvert, ",");
                 while (split != NULL && i < 5) {
                     input[i] = split;
                     i++;
@@ -47,7 +49,7 @@ int main(int argc, char *argv[]) {
 
                // cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
                 Checker checker ;
-                if (!checker.CheckClientDriver(*input)) {
+                if (!checker.CheckClientDriver(input)) {
                     choice[0] = 7;
                     break;
                 }
