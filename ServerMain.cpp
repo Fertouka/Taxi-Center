@@ -19,7 +19,6 @@ bool currentLocationInTripFlag = false;
 void* connectClient(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
     char buffer[4096];
-    //manager->socket->sendData("1", manager->clientDescriptor);
     //recieving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     pthread_mutex_t driverMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -200,10 +199,6 @@ int main(int argc, char *argv[]) {
                     cout << "-1\n";
                     cin.clear();
                     break;
-                    //cin >> numOfDrivers;
-                    //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    //getline(cin, driversNum);
-                    //driversNumConvert = (char *) driversNum.c_str();
                 }
                 numOfDrivers = atoi(driversNumConvert);
                 for (int i = 0; i < numOfDrivers; i++) {
@@ -258,14 +253,9 @@ int main(int argc, char *argv[]) {
                 numOfPassenger = atoi(input[5]);
                 timeOfStart = atoi(input[7]);
                 tariff = atoi(input[6]);
-                // cin >> id >> dummy >> startX >> dummy >> startY >> dummy
-                //   >> endX >> dummy >> endY >> dummy >> numOfPassenger >> dummy >> tariff >> dummy >> timeOfStart;
-                //  if (id < 0)
-                //creating and pushing the trip to the trips list
                 trips.push_front(new Trip(id, Point(startX, startY), Point(endX, endY),
                                           numOfPassenger, tariff, timeOfStart));
                 break;
-                // } while();
             }
                 //create a cab
             case 3: {

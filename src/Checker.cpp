@@ -10,6 +10,14 @@
 
 Checker::Checker() {}
 
+bool Checker::isNumber(const std::string& s) {
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) {
+        ++it;
+    }
+    return !s.empty() && it == s.end();
+}
+
 bool Checker::CheckServerTripInput(Grid *grid, char *input[8]) {
     char *id = input[0];
     char *startX = input[1];
@@ -19,27 +27,27 @@ bool Checker::CheckServerTripInput(Grid *grid, char *input[8]) {
     char *numOfPassenger = input[5];
     char *timeOfStart = input[7];
     char *tariff = input[6];
-    if (isdigit(*id) && atoi( id) >= 0) {
+    if (isNumber(id) && atoi( id) >= 0) {
 
-        if (isdigit(*startX) && atoi( startX) >= 0
+        if (isNumber(startX) && atoi( startX) >= 0
             && atoi( startX) < grid->getWidth()) {
 
-            if (isdigit(*startX) && atoi( startX) >= 0
+            if (isNumber(startX) && atoi( startX) >= 0
                 && atoi( startX) < grid->getWidth()) {
 
-                if (isdigit(*startY) && atoi( startY) >= 0
+                if (isNumber(startY) && atoi( startY) >= 0
                     && atoi( startY) < grid->getHeight()) {
 
-                    if (isdigit(*endX) && atoi( endX) >= 0
+                    if (isNumber(endX) && atoi( endX) >= 0
                         && atoi( endX) < grid->getWidth()) {
 
-                        if (isdigit(*endY) && atoi( endY) >= 0
+                        if (isNumber(endY) && atoi( endY) >= 0
                             && atoi(endY) < grid->getHeight()) {
-                            if (isdigit(*numOfPassenger) && atoi( numOfPassenger) >= 0) {
+                            if (isNumber(numOfPassenger) && atoi( numOfPassenger) >= 0) {
 
-                                if (isdigit(*timeOfStart) && atoi( timeOfStart) > 0) {
+                                if (isNumber(timeOfStart) && atoi( timeOfStart) > 0) {
 
-                                    if (isdigit(*tariff) && atoi( tariff) >= 0) {
+                                    if (isNumber(tariff) && atoi( tariff) >= 0) {
                                         Point startP = Point(atoi( startX), atoi( startY));
                                         Point endP = Point(atoi( endX), atoi( endY));
                                         stack<Node *> trail = BFS::bfs(grid, startP, endP);
@@ -80,8 +88,8 @@ bool Checker::CheckServerCabInput(char *input[4]) {
     char *color = input[3];
     char manufacturers[4] = {'H','S','T','F'};
     char colors[5] = {'R','P','B','G','W'};
-    if (isdigit(*id) && atoi( id) >= 0) {
-        if (isdigit(*typeOfCab) && (atoi(typeOfCab) == 1 || atoi( typeOfCab) == 2)) {
+    if (isNumber(id) && atoi( id) >= 0) {
+        if (isNumber(typeOfCab) && (atoi(typeOfCab) == 1 || atoi( typeOfCab) == 2)) {
             bool isInList = false;
             for (int i = 0; i < 4; ++i) {
                 if (*manufacturer == manufacturers[i]) {
@@ -115,8 +123,8 @@ bool Checker::CheckClientDriver(char *driver[5]) {
     char *status = driver[2];
     char *exp = driver[3];
     char *cabId = driver[4];
-    if (isdigit(*id) && atoi( id) >= 0) {
-        if (isdigit(*age) && atoi(age) >= 0) {
+    if (isNumber(id) && atoi( id) >= 0) {
+        if (isNumber(age) && atoi(age) >= 0) {
             bool isEqual = false;
             char statuses [4] = {'S','M','W','D'};
             for (int i = 0; i < 4; ++i) {
@@ -126,8 +134,8 @@ bool Checker::CheckClientDriver(char *driver[5]) {
                 }
             }
             if (isEqual) {
-                if (isdigit(*exp) && atoi(exp) >= 0) {
-                    return isdigit(*cabId) && atoi(cabId) >= 0;
+                if (isNumber(exp) && atoi(exp) >= 0) {
+                    return isNumber(cabId) && atoi(cabId) >= 0;
                 } else {
                     return false;
                 }

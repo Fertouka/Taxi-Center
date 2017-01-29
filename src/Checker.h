@@ -13,6 +13,7 @@ public:
     Checker();
 
 public:
+    bool isNumber(const std::string& s);
     bool CheckClientDriver(char *driver[5]);
     bool CheckServerTripInput(Grid *grid,char *input[8]);
     bool CheckServerCabInput(char *input[4]);

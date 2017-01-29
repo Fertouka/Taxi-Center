@@ -35,8 +35,7 @@ int main(int argc, char *argv[]) {
                // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin,stringDriver);
                 if (std::count(stringDriver.begin(),stringDriver.end(),',') != 4) {
-                    choice[0] = 7;
-                    break;
+                    exit(0);
                 }
                 char *input[5];
                 int i = 0;
@@ -53,10 +52,8 @@ int main(int argc, char *argv[]) {
                // cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
                 Checker checker ;
                 if (!checker.CheckClientDriver(input)) {
-                    choice[0] = 7;
-                    break;
+                    exit(0);
                 }
-
                 int id = atoi(input[0]);
                 int age = atoi(input[1]);
                 char status = *input[2];
