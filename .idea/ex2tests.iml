@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/Notifier.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Node.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/Matrix.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Job.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Checker.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Point.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Node.cpp" isTestSource="false" />
@@ -23,6 +23,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/Trip.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/TransportationFlow.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/StandardCab.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ThreadPool.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ThreadPool.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Listener.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Driver.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Point.h" isTestSource="false" />
@@ -36,9 +38,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src/Listener.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Matrix.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/LuxuryCab.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/ClientMain.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Job.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Matrix.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ServerMain.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ClientMain.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/sockets/Socket.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/sockets/Tcp.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/sockets/Tcp.h" isTestSource="false" />

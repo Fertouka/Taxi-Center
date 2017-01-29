@@ -10,14 +10,6 @@
 
 Checker::Checker() {}
 
-bool Checker::isNumber(const std::string& s) {
-    std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) {
-        ++it;
-    }
-    return !s.empty() && it == s.end();
-}
-
 bool Checker::CheckServerTripInput(Grid *grid, char *input[8]) {
     char *id = input[0];
     char *startX = input[1];
@@ -151,4 +143,10 @@ bool Checker::CheckClientDriver(char *driver[5]) {
     }
 }
 
-
+bool Checker::isNumber(std::string s) {
+    std::string::iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) {
+        ++it;
+    }
+    return !s.empty() && it == s.end();
+}

@@ -10,6 +10,7 @@
 #include "sockets/Tcp.h"
 #include "src/ThreadManagement.h"
 #include "src/Checker.h"
+#include "src/ThreadPool.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ bool currentLocationInTripFlag = false;
 void* connectClient(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
     char buffer[4096];
-    //recieving a serialized driver
+    //receiving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
     pthread_mutex_t driverMutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&driverMutex);
@@ -90,11 +91,11 @@ void* connectClient(void* socketDesc) {
 
 void* connectBFS(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
-    pthread_mutex_t bfsMutex = PTHREAD_MUTEX_INITIALIZER;
-    pthread_mutex_lock(&bfsMutex);
+    //pthread_mutex_t bfsMutex = PTHREAD_MUTEX_INITIALIZER;
+    //pthread_mutex_lock(&bfsMutex);
     manager->tc->assignTripToDriver();
-    pthread_mutex_unlock(&bfsMutex);
-    pthread_exit(socketDesc);
+    //pthread_mutex_unlock(&bfsMutex);
+    //pthread_exit(socketDesc);
 }
 
 void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clientsDescriptors) {
@@ -114,15 +115,16 @@ void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clie
 }
 
 int main(int argc, char *argv[]) {
+    ThreadPool threadPool(5);
     Checker checker;
     Tcp server(1, atoi(argv[1]));
     server.initialize();
     list <int> clientDescriptors;
     char dummy;
-    bool validGridInputFlag ;
+    bool validGridInputFlag;
     bool validObstacle = true;
     //in this line we creating the grid
-    Grid *grid = NULL;//////////////////////////////////////////
+    Grid *grid = NULL;
     //the size of the grid
     int size[2];
     do {
@@ -158,7 +160,7 @@ int main(int argc, char *argv[]) {
                 obstacles.push_back(Point(x, y));
             }
         } else {
-            validGridInputFlag = false;
+           // validGridInputFlag = false;
             //creating a grid without obstacles
             grid = new Matrix(size[0], size[1]);
         }
@@ -166,6 +168,8 @@ int main(int argc, char *argv[]) {
         if (validObstacle) {
             //creating a grid with obstacles
             grid = new Matrix(size[0], size[1], obstacles);
+        } else {
+            validGridInputFlag = false;
         }
     } while (!validGridInputFlag);
 
@@ -314,16 +318,14 @@ int main(int argc, char *argv[]) {
                 string idString;
                 char *idStringConvert;
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                //cin >> numOfDrivers;
                 getline(cin, idString);
                 idStringConvert = (char *) idString.c_str();
-                while (!isdigit(*idStringConvert) || atoi(idStringConvert) < 0) {
+                while (!checker.isNumber(idStringConvert) || atoi(idStringConvert) < 0) {
                     cout << "-1\n";
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     getline(cin, idString);
                     idStringConvert = (char *) idString.c_str();
                 }
-                //cin >> id;
                 id = atoi(idStringConvert);
                 //creating and initializing iterator for the drivers list
                 list<Driver *>::iterator start;
@@ -374,12 +376,15 @@ int main(int argc, char *argv[]) {
                     sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                     int size = trips.size();
                     for (int i = 0; i < size; i++) {
-                        pthread_t thread;
+                        //pthread_t thread;
                         ThreadManagement *manager = new ThreadManagement(&tc, &server,
                                                                          0, NULL, NULL);
-                        pthread_create(&thread, NULL, connectBFS, manager);
-                        pthread_join(thread, NULL);
+                        //pthread_create(&thread, NULL, connectBFS, manager);
+                        threadPool.addJob(new Job(connectBFS, manager));
+
+                        //pthread_join(threadPool.getThreads()[i], NULL);
                     }
+                    sleep(2);
                     //there are no trips
                 } else {
                     //cresating and initializing the cab's list iterator
