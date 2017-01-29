@@ -21,18 +21,39 @@ private:
 	bool stop;
 	bool isDone;
 	pthread_mutex_t lock;
+
 public:
+/**
+ * ThreadPool constructor
+ * @param threads_num
+ */
 	ThreadPool(int threads_num);
+
+/**
+ * making the threads doing their jobs
+ */
 	void doJobs();
+
+/**
+ * adding a job to the jobs' list
+ * @param job
+ */
 	void addJob(Job *job);
+
+/**
+ * terminate the threads' jobs
+ */
 	void terminate();
-	bool isEmpty();
+
+/**
+ * ThreadPool destructor
+ */
 	virtual ~ThreadPool();
 
-	int getThreads_num() const;
+/**
+ * waiting that threads will finish their jobs
+ */
     void ThreadPoolJoin() ;
-
-	pthread_t *getThreads() const;
 };
 
 #endif /* THREADPOOL_H_ */

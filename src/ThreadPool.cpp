@@ -9,24 +9,14 @@ static void *startJobs(void *arg) {
 	return NULL;
 }
 
-int ThreadPool::getThreads_num() const {
-    return threads_num;
-}
-
-pthread_t *ThreadPool::getThreads() const {
-    return threads;
-}
-
 void ThreadPool::doJobs() {
 	while (!stop) {
 		pthread_mutex_lock(&lock);
 		if (!jobs_queue.empty() ) {
-
 			Job* job = jobs_queue.front();
 			job->execute();
 			jobs_queue.pop();
 			pthread_mutex_unlock(&lock);
-
 		}
 		else {
 			pthread_mutex_unlock(&lock);
@@ -58,8 +48,8 @@ ThreadPool::~ThreadPool() {
 	pthread_mutex_destroy(&lock);
 }
 
-bool ThreadPool::isEmpty() {}
 void ThreadPool::ThreadPoolJoin() {
+    //waiting that the jobs will be done
 	while (!jobs_queue.empty()) {}
 }
 

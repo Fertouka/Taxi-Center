@@ -45,22 +45,14 @@ public:
 
 /**
  * function that assigns the trips from the trips list to ythe currect driver and cab
- * @param trips - the trips list
  */
-    void assignTripsToDrivers();
+    void assignTripToDriver();
 
 /**
- * function tyhat tells a taxi to go pick a client that called
+ * adding a driver to the employees list
+ * @param d a driver
  */
-    void event();
-
-    list<Driver *> *getEmployees() const;
-
     void addDriver(Driver* d);
-
-    void addTrip(Trip* trip);
-
-    void assignTripToDriver();
 };
 
 

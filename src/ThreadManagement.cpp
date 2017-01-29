@@ -9,3 +9,7 @@ ThreadManagement::ThreadManagement(TaxiCenter *tc, Tcp *socket, int clientDescri
                                    list <string> *serLocation) : tc(tc), socket(socket),
                                                                  clientDescriptor(clientDescriptor), serCabs(serCabs),
                                                                  serLocation(serLocation) {}
+
+ThreadManagement::~ThreadManagement() {
+
+}

@@ -18,10 +18,12 @@ int main(int argc, char *argv[]) {
     char buffer[4096];
     //using for managing case 9
     bool hasANewTrip = true;
+    //using to know when the client is initialized
     bool clientInitialized = false;
     char choice[2];
     choice[0] = '1';
     do {
+        //client is initialized after we see that the input is valid, and then he can receive data.
         if(clientInitialized) {
             client.receiveData(choice, sizeof(choice), 0);
         }
@@ -30,10 +32,11 @@ int main(int argc, char *argv[]) {
         case '1': {
             int numOfDrivers = 1;
             int numOfCabs = 1;
+            //getting input of driver
             while (numOfDrivers != 0) {
                 string stringDriver;
-               // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin,stringDriver);
+                //checking the length of a driver input, otherwise, we close the client.
                 if (std::count(stringDriver.begin(),stringDriver.end(),',') != 4) {
                     exit(0);
                 }
@@ -47,10 +50,8 @@ int main(int argc, char *argv[]) {
                     i++;
                     split = strtok(NULL, ",");
                 }
-                //char dummy;
-
-               // cin >> id >> dummy >> age >> dummy >> status >> dummy >> exp >> dummy >> cabId;
-                Checker checker ;
+                Checker checker;
+                //checking if the input is valid, otherwise, we close the client.
                 if (!checker.CheckClientDriver(input)) {
                     exit(0);
                 }
@@ -65,12 +66,14 @@ int main(int argc, char *argv[]) {
                              status + "," + boost::lexical_cast<string>(exp) + "," +
                              boost::lexical_cast<string>(cabId);
                 drivers.push_back(d);
+                //client is initialized after we see that the input is valid.
                 client.initialize();
                 clientInitialized = true;
                 client.sendData(str, 0);
                 numOfDrivers--;
 
             }
+            //getting the cab of this driver from the server
             while (numOfCabs != 0) {
                 //getting a serialized cab
                 client.receiveData(buffer, sizeof(buffer), 0);
@@ -95,6 +98,7 @@ int main(int argc, char *argv[]) {
                 }
                 numOfCabs--;
             }
+            //assign cab to driver
             tc.assignCabsToDrivers();
             break;
         }
@@ -112,6 +116,7 @@ int main(int argc, char *argv[]) {
                 client.sendData("a", 0);
                 //client receive a new location of each driver
                 client.receiveData(buffer, sizeof(buffer), 0);
+                //deserialize a location of cab
                 char *point[3];
                 int j = 0;
                 char *split;
@@ -121,6 +126,7 @@ int main(int argc, char *argv[]) {
                     j++;
                     split = strtok(NULL, ",");
                 }
+                //assign the location to the cab
                 list<Cab *>::iterator cabsIteratorStart = cabs.begin();
                 list<Cab *>::iterator cabsIteratorEnd = cabs.end();
                 while (cabsIteratorStart != cabsIteratorEnd) {

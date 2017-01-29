@@ -14,16 +14,28 @@
 
 using namespace std;
 
+/**
+ * global variables
+ */
+//the choice of the user that the server get
 int choice;
+//used to know if we can send a location to the driver
 bool currentLocationInTripFlag = false;
 
+/**
+ * the threads connect to the clients via this function that create a dialog between them
+ * @param socketDesc threadmanagement that contain the args that thread need
+ */
 void* connectClient(void* socketDesc) {
+    //manager contains the args that thread need
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
     char buffer[4096];
     //receiving a serialized driver
     manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
+    //mutex for deserializing a driver
     pthread_mutex_t driverMutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&driverMutex);
+    //deserializing a driver
     char *driver[5];
     int i = 0;
     char* split;
@@ -59,10 +71,14 @@ void* connectClient(void* socketDesc) {
         //advancing the cab's list iterator by one step
         startC++;
     }
+    //loop for the 9 and 7 option
     while (choice != 7) {
         if (choice == 9 && currentLocationInTripFlag) {
+            //send 9 to client
             manager->socket->sendData("9", manager->clientDescriptor);
+            //getting some message to see that the client and server are communicating
             manager->socket->receiveData(buffer, sizeof(buffer), manager->clientDescriptor);
+            //mutex for sending location to client
             pthread_mutex_t locationMutex = PTHREAD_MUTEX_INITIALIZER;
             pthread_mutex_lock(&locationMutex);
             list<string>::iterator startL;
@@ -74,6 +90,7 @@ void* connectClient(void* socketDesc) {
             while (endL != startL) {
                 //initializing a string to be the current serialized point from the list
                 string str = *startL;
+                //if its the right cab, we send her location
                 if (d->getCabId() == (str[0] - '0')) {
                     //sending to the client the serialized location
                     manager->socket->sendData(str, manager->clientDescriptor);
@@ -89,15 +106,23 @@ void* connectClient(void* socketDesc) {
     pthread_exit(socketDesc);
 }
 
+/**
+ * function that calculate the bfs by thread
+ * @param socketDesc socketDesc threadmanagement that contain the args that thread need
+ */
 void* connectBFS(void* socketDesc) {
     ThreadManagement* manager = (ThreadManagement*)socketDesc;
-    //pthread_mutex_t bfsMutex = PTHREAD_MUTEX_INITIALIZER;
-    //pthread_mutex_lock(&bfsMutex);
+    //assign trip to driver and calculate his bfs
     manager->tc->assignTripToDriver();
-    //pthread_mutex_unlock(&bfsMutex);
-    //pthread_exit(socketDesc);
 }
 
+/**
+ * sending a choice to the clients
+ * @param server
+ * @param sendFlag that tells us if we can send now the choice
+ * @param choice
+ * @param clientsDescriptors
+ */
 void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clientsDescriptors) {
     list <int>::iterator startC;
     list <int>::iterator endC;
@@ -111,6 +136,7 @@ void sendChoiceToClients(Tcp* server,bool &sendFlag, int choice, list <int> clie
             startC++;
         }
     }
+    //to be sure that the clients get the choice before the sever is closed
     sleep(2);
 }
 
@@ -196,7 +222,6 @@ int main(int argc, char *argv[]) {
                 string driversNum;
                 char *driversNumConvert;
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                //cin >> numOfDrivers;
                 getline(cin, driversNum);
                 driversNumConvert = (char *) driversNum.c_str();
                 if (!isdigit(*driversNumConvert) || atoi(driversNumConvert) <= 0) {
@@ -291,7 +316,6 @@ int main(int argc, char *argv[]) {
                 typeOfCab = atoi(input[1]);
                 manufacturer = *input[2];
                 color = *input[3];
-                //cin >> id >> dummy >> typeOfCab >> dummy >> manufacturer >> dummy >> color;
                 //creating a serialized cab string from the users input
                 string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(typeOfCab)
                              + "," + manufacturer + "," + color;
@@ -376,16 +400,11 @@ int main(int argc, char *argv[]) {
                     sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
                     int size = trips.size();
                     for (int i = 0; i < size; i++) {
-                        //pthread_t thread;
                         ThreadManagement *manager = new ThreadManagement(&tc, &server,
                                                                          0, NULL, NULL);
-                        //pthread_create(&thread, NULL, connectBFS, manager);
                         threadPool.addJob(new Job(connectBFS, manager));
                         threadPool.ThreadPoolJoin();
-
-                        //pthread_join(threadPool.getThreads()[i], NULL);
                     }
-                   // sleep(2);
                     //there are no trips
                 } else {
                     //cresating and initializing the cab's list iterator
