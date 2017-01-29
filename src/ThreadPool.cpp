@@ -20,11 +20,13 @@ pthread_t *ThreadPool::getThreads() const {
 void ThreadPool::doJobs() {
 	while (!stop) {
 		pthread_mutex_lock(&lock);
-		if (!jobs_queue.empty()) {
+		if (!jobs_queue.empty() ) {
+
 			Job* job = jobs_queue.front();
+			job->execute();
 			jobs_queue.pop();
 			pthread_mutex_unlock(&lock);
-			job->execute();
+
 		}
 		else {
 			pthread_mutex_unlock(&lock);
@@ -38,7 +40,7 @@ void ThreadPool::addJob(Job *job) {
 	jobs_queue.push(job);
 }
 
-ThreadPool::ThreadPool(int threads_num) : threads_num(threads_num), stop(false) {
+ThreadPool::ThreadPool(int threads_num) : threads_num(threads_num), stop(false), isDone(true) {
 	threads = new pthread_t[threads_num];
 
 	pthread_mutex_init(&lock, NULL);
@@ -57,4 +59,7 @@ ThreadPool::~ThreadPool() {
 }
 
 bool ThreadPool::isEmpty() {}
+void ThreadPool::ThreadPoolJoin() {
+	while (!jobs_queue.empty()) {}
+}
 

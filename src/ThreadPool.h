@@ -19,6 +19,7 @@ private:
 	int threads_num;
 	pthread_t* threads;
 	bool stop;
+	bool isDone;
 	pthread_mutex_t lock;
 public:
 	ThreadPool(int threads_num);
@@ -29,6 +30,7 @@ public:
 	virtual ~ThreadPool();
 
 	int getThreads_num() const;
+    void ThreadPoolJoin() ;
 
 	pthread_t *getThreads() const;
 };

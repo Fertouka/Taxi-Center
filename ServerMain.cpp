@@ -381,10 +381,11 @@ int main(int argc, char *argv[]) {
                                                                          0, NULL, NULL);
                         //pthread_create(&thread, NULL, connectBFS, manager);
                         threadPool.addJob(new Job(connectBFS, manager));
+                        threadPool.ThreadPoolJoin();
 
                         //pthread_join(threadPool.getThreads()[i], NULL);
                     }
-                    sleep(2);
+                   // sleep(2);
                     //there are no trips
                 } else {
                     //cresating and initializing the cab's list iterator
@@ -423,6 +424,7 @@ int main(int argc, char *argv[]) {
         }
     } while (choice != 7);
     //tell to client to get close
+    threadPool.terminate();
     sendChoiceToClients(&server, sendFlag, choice, clientDescriptors);
     drivers.clear();
     cabs.clear();
