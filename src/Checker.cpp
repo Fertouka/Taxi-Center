@@ -46,30 +46,39 @@ bool Checker::CheckServerTripInput(Grid *grid, char *input[8]) {
                                         return !trail.empty();
 
                                     } else {
+                                        cout << "-1\n";
                                         return false;
                                     }
                                 }
                             }else {
+                                cout << "-1\n";
                                 return false;
                             }
                         } else {
+                            cout << "-1\n";
                             return false;
                         }
                     } else {
+                        cout << "-1\n";
                         return false;
                     }
                 } else {
+                    cout << "-1\n";
                     return false;
                 }
             } else {
+                cout << "-1\n";
                 return false;
             }
         } else {
+            cout << "-1\n";
             return false;
         }
     } else {
+        cout << "-1\n";
         return false;
     }
+    cout << "-1\n";
     return false;
 }
 

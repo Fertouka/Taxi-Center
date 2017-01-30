@@ -270,8 +270,8 @@ int main(int argc, char *argv[]) {
                     i++;
                     split = strtok(NULL, ",");
                 }
+
                 if (!checker.CheckServerTripInput(grid, input)) {
-                    cout << "-1\n";
                     break;
                 }
                 id = atoi(input[0]);

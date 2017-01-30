@@ -142,6 +142,7 @@ int main(int argc, char *argv[]) {
             break;
         }
     } while (choice[0] != '7');
+    sleep(2);
     drivers.clear();
     cabs.clear();
     return 0;
