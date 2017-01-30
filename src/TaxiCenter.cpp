@@ -78,6 +78,9 @@ void TaxiCenter::addDriver(Driver* d) {
     employees->push_back(d);
 }
 
+void TaxiCenter::event() {
+
+}
 
 TaxiCenter::TaxiCenter() {
 }
