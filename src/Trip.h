@@ -1,4 +1,4 @@
-// fertoud 316295005 amitayi 203839030
+
 
 #ifndef EX1_TRIP_H
 #define EX1_TRIP_H
