@@ -1,4 +1,3 @@
-// fertoud 316295005 amitayi 203839030
 
 #ifndef EX1_BFS_H
 #define EX1_BFS_H
