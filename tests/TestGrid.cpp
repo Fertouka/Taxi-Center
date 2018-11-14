@@ -1,4 +1,3 @@
-// fertoud 316295005 amitayi 203839030
 
 #include <iostream>
 #include <cmath>
