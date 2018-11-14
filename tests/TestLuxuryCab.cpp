@@ -1,4 +1,4 @@
-// fertoud 316295005 amitayi 203839030
+
 
 #include <gtest/gtest.h>
 #include "Point.h"
